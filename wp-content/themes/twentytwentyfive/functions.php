@@ -253,3 +253,31 @@ function tbt_inject_seo_meta() {
 	}
 }
 add_action( 'wp_head', 'tbt_inject_seo_meta', 1 );
+
+/**
+ * TopBlogTech Enterprise Security Hardening
+ */
+// 1. Disable XML-RPC completely (Blocks 95% of automated brute-force attacks)
+add_filter( 'xmlrpc_enabled', '__return_false' );
+remove_action( 'wp_head', 'rsd_link' );
+remove_action( 'wp_head', 'wlwmanifest_link' );
+
+// 2. Hide WordPress Version everywhere (prevents bot vulnerability scans)
+remove_action( 'wp_head', 'wp_generator' );
+add_filter( 'the_generator', '__return_empty_string' );
+
+// 3. Prevent Username Enumeration / Author Scans (?author=1)
+if ( ! is_admin() && isset( $_REQUEST['author'] ) ) {
+	wp_redirect( home_url( '/' ), 301 );
+	exit;
+}
+
+// 4. Remove version strings from scripts and styles for security through obscurity
+function tbt_remove_ver_css_js( $src ) {
+	if ( strpos( $src, '?ver=' ) ) {
+		$src = remove_query_arg( 'ver', $src );
+	}
+	return $src;
+}
+add_filter( 'style_loader_src', 'tbt_remove_ver_css_js', 9999 );
+add_filter( 'script_loader_src', 'tbt_remove_ver_css_js', 9999 );
