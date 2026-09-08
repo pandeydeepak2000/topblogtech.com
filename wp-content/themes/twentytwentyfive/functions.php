@@ -174,6 +174,9 @@ function tbt_inject_seo_meta() {
 	$site_desc = get_bloginfo( 'description' );
 	$logo_url  = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
 
+	echo "\n<!-- Google Search Console Verification -->\n";
+	echo '<meta name="google-site-verification" content="hqGQLKOd7hV2OFJhYRwpBaDiI2hc_aXdP3DdLmOjMrg" />' . "\n";
+
 	if ( is_singular() ) {
 		global $post;
 		$title          = get_the_title() . ' - ' . $site_name;
