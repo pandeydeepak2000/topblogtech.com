@@ -1,0 +1,12 @@
+# WordPress Cache and temporary logs
+wp-content/cache/
+wp-content/backuply/
+wp-content/speedycache-config/
+error_log
+*.log
+
+# Windows thumbnail caches
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
