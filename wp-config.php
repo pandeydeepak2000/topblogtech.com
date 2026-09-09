@@ -90,6 +90,8 @@ $table_prefix = 'wpa6_';
 define( 'WP_DEBUG', false );
 
 /* Add any custom values between this line and the "stop editing" line. */
+// Enterprise Security: Prevent backdoors by disabling file editing in dashboard
+define( 'DISALLOW_FILE_EDIT', true );
 
 /* That's all, stop editing! Happy publishing. */
 
