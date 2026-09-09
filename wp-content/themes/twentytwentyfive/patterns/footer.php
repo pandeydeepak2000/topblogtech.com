@@ -21,15 +21,15 @@ $logo_url = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
 		<div class="tbt-footer-newsletter-box">
 			<div class="tbt-newsletter-text">
 				<span class="tbt-newsletter-badge">🚀 WEEKLY CREATOR DISPATCH</span>
-				<h3 class="tbt-newsletter-title">Build, Scale &amp; Monetize Your Digital Media Empire</h3>
-				<p class="tbt-newsletter-desc">Join 10,000+ ambitious creators getting weekly high-CPC blogging playbooks, YouTube algorithm updates, and realistic online income blueprints.</p>
+				<h3 class="tbt-newsletter-title" style="color: #ffffff !important;">Build, Scale &amp; Monetize Your Digital Media Empire</h3>
+				<p class="tbt-newsletter-desc" style="color: #cbd5e1 !important;">Join 10,000+ ambitious creators getting weekly high-CPC blogging playbooks, YouTube algorithm updates, and realistic online income blueprints.</p>
 			</div>
 			<div class="tbt-newsletter-form">
 				<form action="#" method="post" onsubmit="event.preventDefault(); alert('Thank you for subscribing to TopBlogTech!');" class="tbt-form-inline">
 					<input type="email" placeholder="Enter your best email..." required class="tbt-input-email" />
 					<button type="submit" class="tbt-btn-subscribe">Subscribe Free →</button>
 				</form>
-				<p class="tbt-form-subtext">🔒 Zero spam. Unsubscribe at any time with a single click.</p>
+				<p class="tbt-form-subtext" style="color: #94a3b8 !important;">🔒 Zero spam. Unsubscribe at any time with a single click.</p>
 			</div>
 		</div>
 	</div>
