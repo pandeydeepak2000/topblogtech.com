@@ -284,3 +284,24 @@ function tbt_remove_ver_css_js( $src ) {
 }
 add_filter( 'style_loader_src', 'tbt_remove_ver_css_js', 9999 );
 add_filter( 'script_loader_src', 'tbt_remove_ver_css_js', 9999 );
+
+/**
+ * TopBlogTech Google Analytics (GA4) Tracking Script
+ * Stream: topblog (https://topblogtech.com)
+ * Measurement ID: G-SNDLMK8H9E
+ */
+function tbt_inject_google_analytics() {
+	?>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SNDLMK8H9E"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SNDLMK8H9E');
+</script>
+	<?php
+}
+add_action( 'wp_head', 'tbt_inject_google_analytics', 2 );
+
