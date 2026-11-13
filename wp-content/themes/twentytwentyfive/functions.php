@@ -330,6 +330,13 @@ function tbt_inject_critical_styles() {
 }
 add_action( 'wp_head', 'tbt_inject_critical_styles', 999 );
 
+// Force author display name to always be 'TopBlogTech Editorial Team' for all public posts
+function tbt_filter_author_display_name( $display_name ) {
+	return 'TopBlogTech Editorial Team';
+}
+add_filter( 'the_author', 'tbt_filter_author_display_name', 10, 1 );
+add_filter( 'get_the_author_display_name', 'tbt_filter_author_display_name', 10, 1 );
+
 // Safety Redirects for Deprecated / Default Pages & Legacy -2024 Slugs
 function tbt_handle_legacy_redirects() {
 	if ( is_admin() ) {

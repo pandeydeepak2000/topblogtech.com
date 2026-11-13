@@ -67,7 +67,8 @@ RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
 
-# 301 Permanent Redirects: Legacy -2024 Slugs to Modern Canonical URLs
+# 301 Permanent Redirects: Legacy -2024 Slugs to Modern Canonical URLs & Deprecated Pages
+RewriteRule ^sample-page/?$ / [R=301,L]
 RewriteRule ^how-to-start-a-tech-finance-blog-2024/?$ /how-to-start-a-tech-finance-blog-modern/ [R=301,L]
 RewriteRule ^best-passive-income-ideas-2024/?$ /best-passive-income-ideas-modern/ [R=301,L]
 RewriteRule ^top-7-ai-tools-to-make-money-online-2024/?$ /top-7-ai-tools-to-make-money-online-modern/ [R=301,L]
