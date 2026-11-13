@@ -169,13 +169,25 @@ endif;
 /**
  * TopBlogTech Automated SEO & Schema Engine
  */
+// Resource Hints for Fast Loading & Core Web Vitals
+function tbt_inject_resource_hints() {
+	echo "\n<!-- Resource Hints for Core Web Vitals & Google Analytics -->\n";
+	echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+	echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+	echo '<link rel="preconnect" href="https://www.googletagmanager.com">' . "\n";
+	echo '<link rel="dns-prefetch" href="https://www.google-analytics.com">' . "\n";
+}
+add_action( 'wp_head', 'tbt_inject_resource_hints', 0 );
+
 function tbt_inject_seo_meta() {
-	$site_name = get_bloginfo( 'name' );
-	$site_desc = get_bloginfo( 'description' );
-	$logo_url  = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
+	$site_name   = get_bloginfo( 'name' );
+	$site_desc   = get_bloginfo( 'description' );
+	$logo_url    = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
+	$site_domain = home_url( '/' );
 
 	echo "\n<!-- Google Search Console Verification -->\n";
 	echo '<meta name="google-site-verification" content="hqGQLKOd7hV2OFJhYRwpBaDiI2hc_aXdP3DdLmOjMrg" />' . "\n";
+	echo '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />' . "\n";
 
 	if ( is_singular() ) {
 		global $post;
@@ -186,6 +198,10 @@ function tbt_inject_seo_meta() {
 		$image_url      = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'full' ) : $logo_url;
 		$published_time = get_the_date( 'c' );
 		$modified_time  = get_the_modified_date( 'c' );
+		$raw_author     = get_the_author();
+		$author_name    = ( empty( $raw_author ) || 'admin' === strtolower( $raw_author ) ) ? 'TopBlogTech Editorial Team' : $raw_author;
+		$categories     = get_the_category();
+		$cat_name       = ! empty( $categories ) ? $categories[0]->name : 'Technology & Digital Monetization';
 
 		echo "\n<!-- TopBlogTech SEO Engine -->\n";
 		echo '<meta name="description" content="' . esc_attr( $excerpt ) . '" />' . "\n";
@@ -196,12 +212,15 @@ function tbt_inject_seo_meta() {
 		echo '<meta property="og:url" content="' . esc_url( $canonical ) . '" />' . "\n";
 		echo '<meta property="og:site_name" content="' . esc_attr( $site_name ) . '" />' . "\n";
 		echo '<meta property="og:image" content="' . esc_url( $image_url ) . '" />' . "\n";
+		echo '<meta property="article:published_time" content="' . esc_attr( $published_time ) . '" />' . "\n";
+		echo '<meta property="article:modified_time" content="' . esc_attr( $modified_time ) . '" />' . "\n";
+		echo '<meta property="article:section" content="' . esc_attr( $cat_name ) . '" />' . "\n";
 		echo '<meta name="twitter:card" content="summary_large_image" />' . "\n";
 		echo '<meta name="twitter:title" content="' . esc_attr( get_the_title() ) . '" />' . "\n";
 		echo '<meta name="twitter:description" content="' . esc_attr( $excerpt ) . '" />' . "\n";
 		echo '<meta name="twitter:image" content="' . esc_url( $image_url ) . '" />' . "\n";
 
-		// JSON-LD BlogPosting Schema
+		// JSON-LD BlogPosting Schema (E-E-A-T Compliant)
 		$schema = array(
 			'@context'         => 'https://schema.org',
 			'@type'            => 'BlogPosting',
@@ -210,31 +229,63 @@ function tbt_inject_seo_meta() {
 			'image'            => $image_url,
 			'datePublished'    => $published_time,
 			'dateModified'     => $modified_time,
+			'inLanguage'       => 'en-US',
+			'mainEntityOfPage' => array(
+				'@type' => 'WebPage',
+				'@id'   => $canonical,
+			),
 			'author'           => array(
 				'@type' => 'Person',
-				'name'  => get_the_author() ? get_the_author() : 'Editorial Team',
+				'name'  => $author_name,
+				'url'   => home_url( '/about-us/' ),
 			),
 			'publisher'        => array(
 				'@type' => 'Organization',
 				'name'  => $site_name,
+				'url'   => $site_domain,
 				'logo'  => array(
 					'@type' => 'ImageObject',
 					'url'   => $logo_url,
 				),
 			),
-			'mainEntityOfPage' => array(
-				'@type' => 'WebPage',
-				'@id'   => $canonical,
-			),
 		);
 		echo '<script type="application/ld+json">' . json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ) . '</script>' . "\n";
+
+		// JSON-LD BreadcrumbList Schema
+		$breadcrumb_schema = array(
+			'@context'        => 'https://schema.org',
+			'@type'           => 'BreadcrumbList',
+			'itemListElement' => array(
+				array(
+					'@type'    => 'ListItem',
+					'position' => 1,
+					'name'     => 'Home',
+					'item'     => home_url( '/' ),
+				),
+				array(
+					'@type'    => 'ListItem',
+					'position' => 2,
+					'name'     => $cat_name,
+					'item'     => ! empty( $categories ) ? get_category_link( $categories[0]->term_id ) : home_url( '/' ),
+				),
+				array(
+					'@type'    => 'ListItem',
+					'position' => 3,
+					'name'     => get_the_title(),
+					'item'     => $canonical,
+				),
+			),
+		);
+		echo '<script type="application/ld+json">' . json_encode( $breadcrumb_schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ) . '</script>' . "\n";
 	} else {
 		$canonical = home_url( '/' );
+		$page_title = is_category() ? single_cat_title( '', false ) . ' - ' . $site_name : $site_name . ' - Learn | Grow | Earn';
+
 		echo "\n<!-- TopBlogTech SEO Engine -->\n";
-		echo '<meta name="description" content="' . esc_attr( $site_desc . ' - High-authority blueprints on tech blogging, video algorithms, AdSense optimization, and modern digital wealth.' ) . '" />' . "\n";
+		echo '<meta name="description" content="' . esc_attr( $site_desc . ' - Independent blueprints on tech blogging, video algorithms, AdSense optimization, and modern digital creator workflows.' ) . '" />' . "\n";
 		echo '<link rel="canonical" href="' . esc_url( $canonical ) . '" />' . "\n";
 		echo '<meta property="og:type" content="website" />' . "\n";
-		echo '<meta property="og:title" content="' . esc_attr( $site_name . ' - Learn | Grow | Earn' ) . '" />' . "\n";
+		echo '<meta property="og:title" content="' . esc_attr( $page_title ) . '" />' . "\n";
 		echo '<meta property="og:description" content="' . esc_attr( $site_desc ) . '" />' . "\n";
 		echo '<meta property="og:url" content="' . esc_url( $canonical ) . '" />' . "\n";
 		echo '<meta property="og:image" content="' . esc_url( $logo_url ) . '" />' . "\n";
@@ -253,9 +304,44 @@ function tbt_inject_seo_meta() {
 			),
 		);
 		echo '<script type="application/ld+json">' . json_encode( $site_schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ) . '</script>' . "\n";
+
+		$org_schema = array(
+			'@context'    => 'https://schema.org',
+			'@type'       => 'NewsMediaOrganization',
+			'name'        => $site_name,
+			'url'         => $site_domain,
+			'logo'        => $logo_url,
+			'description' => $site_desc,
+			'publishingPrinciples' => home_url( '/editorial-policy/' ),
+			'correctionsPolicy'    => home_url( '/corrections-policy/' ),
+		);
+		echo '<script type="application/ld+json">' . json_encode( $org_schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ) . '</script>' . "\n";
 	}
 }
 add_action( 'wp_head', 'tbt_inject_seo_meta', 1 );
+
+// Inlined Critical CSS for High-Speed Performance & No FOUC
+function tbt_inject_critical_styles() {
+	$css_file = get_template_directory() . '/assets/css/topblogtech-premium.css';
+	if ( file_exists( $css_file ) ) {
+		echo "\n<!-- TopBlogTech Critical Inlined Styles -->\n";
+		echo "<style id=\"tbt-critical-css\">\n" . file_get_contents( $css_file ) . "\n</style>\n";
+	}
+}
+add_action( 'wp_head', 'tbt_inject_critical_styles', 999 );
+
+// Safety Redirects for Deprecated / Default Pages
+function tbt_handle_legacy_redirects() {
+	if ( is_admin() ) {
+		return;
+	}
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+	if ( strpos( $request_uri, '/sample-page' ) !== false ) {
+		wp_redirect( home_url( '/' ), 301 );
+		exit;
+	}
+}
+add_action( 'template_redirect', 'tbt_handle_legacy_redirects', 1 );
 
 /**
  * TopBlogTech Enterprise Security Hardening

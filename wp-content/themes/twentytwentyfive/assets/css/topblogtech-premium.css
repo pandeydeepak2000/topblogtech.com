@@ -38,14 +38,75 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  margin: 0 !important;
+  padding: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
 body {
   font-family: var(--tbt-font-body);
   color: var(--tbt-text-body);
   background-color: var(--tbt-bg-body);
   line-height: 1.7;
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
   -webkit-font-smoothing: antialiased;
+  --wp--style--root--padding-top: 0px !important;
+}
+
+/* Eliminate any margin/padding gap above sticky header */
+.wp-site-blocks {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+:where(.wp-site-blocks) > :first-child,
+.wp-site-blocks > :first-child,
+.wp-site-blocks > header.wp-block-template-part,
+header.wp-block-template-part,
+.wp-block-template-part,
+header {
+  margin-top: 0 !important;
+  margin-block-start: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Accessibility Skip Link */
+.skip-link,
+#wp-skip-link,
+.screen-reader-text:not(:focus):not(:focus-within) {
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+
+.skip-link:focus,
+#wp-skip-link:focus {
+  top: 15px !important;
+  left: 15px !important;
+  width: auto !important;
+  height: auto !important;
+  clip: auto !important;
+  clip-path: none !important;
+  background: #0f172a !important;
+  color: #ffffff !important;
+  padding: 12px 22px !important;
+  border-radius: 8px !important;
+  z-index: 999999 !important;
+  font-weight: 700 !important;
+  border: 2px solid #2563eb !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
 }
 
 /* ==========================================================================
@@ -1259,4 +1320,105 @@ body {
   box-shadow: var(--tbt-shadow-sm) !important;
   transform: translateY(-2px) !important;
 }
+
+/* ==========================================================================
+   Editorial Transparency & Author Box (E-E-A-T)
+   ========================================================================== */
+.tbt-author-box {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  background: #ffffff !important;
+  border: 1px solid var(--tbt-border-light) !important;
+  border-radius: 16px !important;
+  padding: 24px 28px !important;
+  margin: 40px 0 24px !important;
+  box-shadow: var(--tbt-shadow-sm) !important;
+}
+
+.tbt-author-avatar {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%) !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 800 !important;
+  font-size: 1.3rem !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
+}
+
+.tbt-author-info {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.tbt-author-name {
+  font-family: var(--tbt-font-heading) !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: var(--tbt-text-dark) !important;
+  margin: 0 0 4px !important;
+}
+
+.tbt-author-role {
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: var(--tbt-primary) !important;
+  margin-bottom: 6px !important;
+}
+
+.tbt-author-bio {
+  font-size: 0.92rem !important;
+  line-height: 1.6 !important;
+  color: var(--tbt-text-body) !important;
+  margin: 0 !important;
+}
+
+/* Editorial & Methodology Callout */
+.tbt-methodology-box {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  border-left: 4px solid var(--tbt-primary) !important;
+  border-radius: 12px !important;
+  padding: 18px 22px !important;
+  margin: 28px 0 !important;
+  font-size: 0.92rem !important;
+  line-height: 1.6 !important;
+}
+
+.tbt-methodology-title {
+  font-weight: 700 !important;
+  color: var(--tbt-text-dark) !important;
+  margin-bottom: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.tbt-risk-notice {
+  background: #fffbeb !important;
+  border: 1px solid #fef3c7 !important;
+  border-left: 4px solid #f59e0b !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  margin: 24px 0 !important;
+  font-size: 0.9rem !important;
+  color: #92400e !important;
+}
+
+@media (max-width: 640px) {
+  .tbt-author-box {
+    flex-direction: column !important;
+    text-align: center !important;
+    align-items: center !important;
+    padding: 20px !important;
+  }
+}
+
 
