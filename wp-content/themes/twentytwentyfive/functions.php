@@ -330,6 +330,9 @@ function tbt_inject_critical_styles() {
 }
 add_action( 'wp_head', 'tbt_inject_critical_styles', 999 );
 
+// Prevent theme auto-updates from overwriting custom patterns
+add_filter( 'auto_update_theme', '__return_false' );
+
 // Force author display name to always be 'TopBlogTech Editorial Team' for all public posts
 function tbt_filter_author_display_name( $display_name ) {
 	return 'TopBlogTech Editorial Team';
