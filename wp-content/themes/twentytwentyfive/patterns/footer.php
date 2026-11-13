@@ -20,16 +20,16 @@ $logo_url = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
 	<div class="tbt-footer-newsletter-wrap">
 		<div class="tbt-footer-newsletter-box">
 			<div class="tbt-newsletter-text">
-				<span class="tbt-newsletter-badge">🚀 WEEKLY CREATOR DISPATCH</span>
-				<h3 class="tbt-newsletter-title" style="color: #ffffff !important;">Build, Scale &amp; Monetize Your Digital Media Empire</h3>
-				<p class="tbt-newsletter-desc" style="color: #cbd5e1 !important;">Get weekly in-depth blogging blueprints, search algorithm breakdowns, and realistic digital monetization strategies delivered straight to your inbox.</p>
+				<span class="tbt-newsletter-badge">📬 EDITORIAL RESEARCH UPDATES</span>
+				<h3 class="tbt-newsletter-title" style="color: #ffffff !important;">Connect with the TopBlogTech Research Desk</h3>
+				<p class="tbt-newsletter-desc" style="color: #cbd5e1 !important;">Submit your email to receive periodic editorial monographs on search engine algorithm updates, technical web architecture, and monetization case studies.</p>
 			</div>
 			<div class="tbt-newsletter-form">
 				<form action="<?php echo esc_url( $home_url . 'contact-us/' ); ?>" method="get" class="tbt-form-inline">
 					<input type="email" name="subscribe_email" placeholder="Enter your business email..." required class="tbt-input-email" />
-					<button type="submit" class="tbt-btn-subscribe">Subscribe Free →</button>
+					<button type="submit" class="tbt-btn-subscribe">Connect with Editorial →</button>
 				</form>
-				<p class="tbt-form-subtext" style="color: #94a3b8 !important;">🔒 Zero spam. We respect your privacy. Unsubscribe at any time.</p>
+				<p class="tbt-form-subtext" style="color: #94a3b8 !important;">🔒 Privacy-first. Submissions are received directly by our desk. To remove your contact preferences at any time, email contact@topblogtech.com.</p>
 			</div>
 		</div>
 	</div>
