@@ -621,6 +621,78 @@ header {
 }
 
 /* ==========================================================================
+   Standard Content Pages (Privacy Policy, Terms, About, Contact, Policies)
+   ========================================================================== */
+.page .wp-block-post-title,
+.page .entry-title {
+  display: none !important;
+}
+
+.tbt-page-main,
+.page main,
+.page .entry-content,
+.page .wp-block-post-content {
+  max-width: 860px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 30px 20px 80px !important;
+  box-sizing: border-box !important;
+}
+
+.page h1,
+.page h2 {
+  font-family: var(--tbt-font-heading) !important;
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  color: var(--tbt-text-dark) !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.25 !important;
+  margin-top: 10px !important;
+  margin-bottom: 20px !important;
+}
+
+.page h3 {
+  font-family: var(--tbt-font-heading) !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  color: var(--tbt-text-dark) !important;
+  margin-top: 36px !important;
+  margin-bottom: 14px !important;
+  letter-spacing: -0.015em !important;
+}
+
+.page p {
+  font-size: 1.05rem !important;
+  line-height: 1.8 !important;
+  color: #334155 !important;
+  margin-bottom: 20px !important;
+}
+
+.page ul,
+.page ol {
+  font-size: 1.05rem !important;
+  line-height: 1.75 !important;
+  color: #334155 !important;
+  padding-left: 24px !important;
+  margin-bottom: 24px !important;
+}
+
+.page li {
+  margin-bottom: 10px !important;
+}
+
+.page a {
+  color: var(--tbt-primary) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+  font-weight: 600 !important;
+}
+
+.page a:hover {
+  color: var(--tbt-primary-dark) !important;
+}
+
+/* ==========================================================================
    Ultra-Modern Premium Footer
    ========================================================================== */
 .tbt-footer {
