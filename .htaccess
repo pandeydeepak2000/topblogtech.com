@@ -66,6 +66,18 @@ Options -Indexes
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
+
+# 301 Permanent Redirects: Legacy -2024 Slugs to Modern Canonical URLs
+RewriteRule ^how-to-start-a-tech-finance-blog-2024/?$ /how-to-start-a-tech-finance-blog-modern/ [R=301,L]
+RewriteRule ^best-passive-income-ideas-2024/?$ /best-passive-income-ideas-modern/ [R=301,L]
+RewriteRule ^top-7-ai-tools-to-make-money-online-2024/?$ /top-7-ai-tools-to-make-money-online-modern/ [R=301,L]
+RewriteRule ^high-yield-savings-accounts-vs-index-funds-2024/?$ /high-yield-savings-accounts-vs-index-funds-modern/ [R=301,L]
+RewriteRule ^high-income-digital-skills-to-learn-2024/?$ /high-income-digital-skills-to-learn-modern/ [R=301,L]
+RewriteRule ^dividend-growth-investing-passive-income-portfolio-2024/?$ /dividend-growth-investing-passive-income-portfolio-modern/ [R=301,L]
+RewriteRule ^best-password-managers-1password-bitwarden-dashlane-2024/?$ /best-password-managers-1password-bitwarden-dashlane-modern/ [R=301,L]
+RewriteRule ^n8n-vs-make-vs-zapier-ai-automation-comparison-2024/?$ /n8n-vs-make-vs-zapier-ai-automation-comparison-modern/ [R=301,L]
+RewriteRule ^best-vpn-services-nordvpn-expressvpn-surfshark-2024/?$ /best-vpn-services-nordvpn-expressvpn-surfshark-modern/ [R=301,L]
+
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

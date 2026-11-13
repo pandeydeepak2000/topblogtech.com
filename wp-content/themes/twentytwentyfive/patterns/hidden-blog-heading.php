@@ -27,7 +27,7 @@ $home_url = home_url( '/' );
 			High-authority SEO blueprints, YouTube algorithms, Google AdSense optimization, and realistic online income strategies for modern creators and entrepreneurs.
 		</p>
 		<div class="tbt-hero-tags">
-			<a href="<?php echo esc_url( $home_url . 'category/blogging/' ); ?>" class="tbt-pill">#Blogging 2024</a>
+			<a href="<?php echo esc_url( $home_url . 'category/blogging/' ); ?>" class="tbt-pill">#BloggingMastery</a>
 			<a href="<?php echo esc_url( $home_url . 'category/online-money/' ); ?>" class="tbt-pill">#MakeMoneyOnline</a>
 			<a href="<?php echo esc_url( $home_url . 'category/youtube-growth/' ); ?>" class="tbt-pill">#YouTubeGrowth</a>
 			<a href="<?php echo esc_url( $home_url . 'category/google-adsense/' ); ?>" class="tbt-pill">#AdSenseMastery</a>

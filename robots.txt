@@ -3,3 +3,4 @@ Disallow: /wp-admin/
 Allow: /wp-admin/admin-ajax.php
 
 Sitemap: https://topblogtech.com/wp-sitemap.xml
+Sitemap: https://topblogtech.com/sitemaps.xml

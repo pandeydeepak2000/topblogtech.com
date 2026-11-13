@@ -330,14 +330,34 @@ function tbt_inject_critical_styles() {
 }
 add_action( 'wp_head', 'tbt_inject_critical_styles', 999 );
 
-// Safety Redirects for Deprecated / Default Pages
+// Safety Redirects for Deprecated / Default Pages & Legacy -2024 Slugs
 function tbt_handle_legacy_redirects() {
 	if ( is_admin() ) {
 		return;
 	}
-	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) : '';
+	$request_uri = rtrim( $request_uri, '/' ) . '/';
+
 	if ( strpos( $request_uri, '/sample-page' ) !== false ) {
 		wp_redirect( home_url( '/' ), 301 );
+		exit;
+	}
+
+	// 301 Permanent Redirects: Legacy -2024 Slugs to Modern Canonical URLs
+	$legacy_301_map = array(
+		'/how-to-start-a-tech-finance-blog-2024/'                     => '/how-to-start-a-tech-finance-blog-modern/',
+		'/best-passive-income-ideas-2024/'                            => '/best-passive-income-ideas-modern/',
+		'/top-7-ai-tools-to-make-money-online-2024/'                  => '/top-7-ai-tools-to-make-money-online-modern/',
+		'/high-yield-savings-accounts-vs-index-funds-2024/'           => '/high-yield-savings-accounts-vs-index-funds-modern/',
+		'/high-income-digital-skills-to-learn-2024/'                  => '/high-income-digital-skills-to-learn-modern/',
+		'/dividend-growth-investing-passive-income-portfolio-2024/'   => '/dividend-growth-investing-passive-income-portfolio-modern/',
+		'/best-password-managers-1password-bitwarden-dashlane-2024/'  => '/best-password-managers-1password-bitwarden-dashlane-modern/',
+		'/n8n-vs-make-vs-zapier-ai-automation-comparison-2024/'       => '/n8n-vs-make-vs-zapier-ai-automation-comparison-modern/',
+		'/best-vpn-services-nordvpn-expressvpn-surfshark-2024/'       => '/best-vpn-services-nordvpn-expressvpn-surfshark-modern/',
+	);
+
+	if ( isset( $legacy_301_map[ $request_uri ] ) ) {
+		wp_redirect( home_url( $legacy_301_map[ $request_uri ] ), 301 );
 		exit;
 	}
 }

@@ -35,7 +35,7 @@ $home_url = home_url( '/' );
 		</nav>
 
 		<div class="tbt-header-actions">
-			<a href="<?php echo esc_url( $home_url . 'how-to-start-a-tech-finance-blog-2024/' ); ?>" class="tbt-btn-cta">
+			<a href="<?php echo esc_url( $home_url . 'how-to-start-a-tech-finance-blog-modern/' ); ?>" class="tbt-btn-cta">
 				<span>Featured Guide</span> 🚀
 			</a>
 			<button class="tbt-mobile-toggle" id="tbt-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" onclick="var h=document.getElementById('tbt-site-header');var o=h.classList.toggle('tbt-mobile-open');this.setAttribute('aria-expanded',o);">
