@@ -25,11 +25,8 @@ $logo_url = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
 				<p class="tbt-newsletter-desc" style="color: #cbd5e1 !important;">Submit your email to receive periodic editorial monographs on search engine algorithm updates, technical web architecture, and monetization case studies.</p>
 			</div>
 			<div class="tbt-newsletter-form">
-				<form action="<?php echo esc_url( $home_url . 'contact-us/' ); ?>" method="get" class="tbt-form-inline">
-					<input type="email" name="subscribe_email" placeholder="Enter your business email..." required class="tbt-input-email" />
-					<button type="submit" class="tbt-btn-subscribe">Connect with Editorial →</button>
-				</form>
-				<p class="tbt-form-subtext" style="color: #94a3b8 !important;">🔒 Privacy-first. Submissions are received directly by our desk. To remove your contact preferences at any time, email contact@topblogtech.com.</p>
+				<a href="<?php echo esc_url( $home_url . 'contact-us/' ); ?>" class="tbt-btn-subscribe" style="display:inline-block; text-align:center; text-decoration:none;">Connect with Research Desk →</a>
+				<p class="tbt-form-subtext" style="color: #94a3b8 !important;">Direct editorial contact: <a href="mailto:contact@topblogtech.com" style="color: #60a5fa; text-decoration: underline;">contact@topblogtech.com</a> • Verified response within 24–48 business hours.</p>
 			</div>
 		</div>
 	</div>
@@ -55,9 +52,10 @@ $logo_url = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
 				<ul class="tbt-footer-links">
 					<li><a href="<?php echo esc_url( $home_url . 'category/blogging/' ); ?>">Blogging Mastery</a></li>
 					<li><a href="<?php echo esc_url( $home_url . 'category/online-money/' ); ?>">Online Money Models</a></li>
-					<li><a href="<?php echo esc_url( $home_url . 'category/youtube-growth/' ); ?>">YouTube Algorithm</a></li>
+					<li><a href="<?php echo esc_url( $home_url . 'category/youtube-growth/' ); ?>">YouTube &amp; Social</a></li>
 					<li><a href="<?php echo esc_url( $home_url . 'category/google-adsense/' ); ?>">Google AdSense</a></li>
-					<li><a href="<?php echo esc_url( $home_url . 'category/passive-income/' ); ?>">Passive Income Assets</a></li>
+					<li><a href="<?php echo esc_url( $home_url . 'category/tech-ai/' ); ?>">Tech &amp; AI Tools</a></li>
+					<li><a href="<?php echo esc_url( $home_url . 'category/finance/' ); ?>">Finance &amp; Wealth</a></li>
 				</ul>
 			</div>
 

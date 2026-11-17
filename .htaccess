@@ -79,6 +79,19 @@ RewriteRule ^best-password-managers-1password-bitwarden-dashlane-2024/?$ /best-p
 RewriteRule ^n8n-vs-make-vs-zapier-ai-automation-comparison-2024/?$ /n8n-vs-make-vs-zapier-ai-automation-comparison-modern/ [R=301,L]
 RewriteRule ^best-vpn-services-nordvpn-expressvpn-surfshark-2024/?$ /best-vpn-services-nordvpn-expressvpn-surfshark-modern/ [R=301,L]
 
+# 301 Permanent Redirects: Category Consolidation (18 down to 6)
+RewriteRule ^category/linkedin-growth/?$ /category/youtube-growth/ [R=301,L]
+RewriteRule ^category/self-growth/?$ /category/blogging/ [R=301,L]
+RewriteRule ^category/instagram/?$ /category/youtube-growth/ [R=301,L]
+RewriteRule ^category/uncategorized/?$ /category/blogging/ [R=301,L]
+RewriteRule ^category/affiliate-marketing/?$ /category/online-money/ [R=301,L]
+RewriteRule ^category/x-twitter/?$ /category/youtube-growth/ [R=301,L]
+RewriteRule ^category/passive-income/?$ /category/online-money/ [R=301,L]
+RewriteRule ^category/tech-reviews/?$ /category/tech-ai/ [R=301,L]
+RewriteRule ^category/ai-tools/?$ /category/tech-ai/ [R=301,L]
+RewriteRule ^category/technology/?$ /category/tech-ai/ [R=301,L]
+RewriteRule ^category/finance-wealth/?$ /category/finance/ [R=301,L]
+
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

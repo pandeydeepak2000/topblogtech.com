@@ -180,14 +180,24 @@ function tbt_inject_resource_hints() {
 add_action( 'wp_head', 'tbt_inject_resource_hints', 0 );
 
 function tbt_inject_seo_meta() {
-	$site_name   = get_bloginfo( 'name' );
-	$site_desc   = get_bloginfo( 'description' );
+	$site_name   = ! empty( get_bloginfo( 'name' ) ) ? get_bloginfo( 'name' ) : 'TopBlogTech';
+	$site_desc   = ! empty( get_bloginfo( 'description' ) ) ? get_bloginfo( 'description' ) : 'Independent blueprints on tech blogging, video algorithms, AdSense optimization, and modern digital creator workflows.';
 	$logo_url    = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
 	$site_domain = home_url( '/' );
 
+	// Remove WordPress default canonical and robots to prevent duplicates
+	remove_action( 'wp_head', 'rel_canonical' );
+	remove_action( 'wp_head', 'wp_robots', 1 );
+
 	echo "\n<!-- Google Search Console Verification -->\n";
 	echo '<meta name="google-site-verification" content="hqGQLKOd7hV2OFJhYRwpBaDiI2hc_aXdP3DdLmOjMrg" />' . "\n";
-	echo '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />' . "\n";
+
+	// Accurate robots directives based on page type (no contradictory tags)
+	if ( is_author() || is_date() || is_search() || is_404() ) {
+		echo '<meta name="robots" content="noindex, follow" />' . "\n";
+	} else {
+		echo '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />' . "\n";
+	}
 
 	if ( is_singular() ) {
 		global $post;
@@ -199,7 +209,7 @@ function tbt_inject_seo_meta() {
 		$published_time = get_the_date( 'c' );
 		$modified_time  = get_the_modified_date( 'c' );
 		$raw_author     = get_the_author();
-		$author_name    = ( empty( $raw_author ) || 'admin' === strtolower( $raw_author ) ) ? 'TopBlogTech Editorial Team' : $raw_author;
+		$author_name    = ( empty( $raw_author ) || 'admin' === strtolower( $raw_author ) ) ? 'Deepak Pandey' : $raw_author;
 		$categories     = get_the_category();
 		$cat_name       = ! empty( $categories ) ? $categories[0]->name : 'Technology & Digital Monetization';
 
@@ -278,11 +288,40 @@ function tbt_inject_seo_meta() {
 		);
 		echo '<script type="application/ld+json">' . json_encode( $breadcrumb_schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ) . '</script>' . "\n";
 	} else {
-		$canonical = home_url( '/' );
-		$page_title = is_category() ? single_cat_title( '', false ) . ' - ' . $site_name : $site_name . ' - Learn | Grow | Earn';
+		// Accurate canonical calculation for archives and taxonomy pages
+		if ( is_category() ) {
+			$canonical  = get_category_link( get_queried_object_id() );
+			$page_title = single_cat_title( '', false ) . ' - ' . $site_name;
+		} elseif ( is_tag() ) {
+			$canonical  = get_tag_link( get_queried_object_id() );
+			$page_title = single_tag_title( '', false ) . ' - ' . $site_name;
+		} elseif ( is_author() ) {
+			$canonical  = get_author_posts_url( get_queried_object_id() );
+			$page_title = get_the_author() . ' - ' . $site_name;
+		} elseif ( is_year() ) {
+			$canonical  = get_year_link( get_query_var( 'year' ) );
+			$page_title = get_query_var( 'year' ) . ' Archive - ' . $site_name;
+		} elseif ( is_month() ) {
+			$canonical  = get_month_link( get_query_var( 'year' ), get_query_var( 'monthnum' ) );
+			$page_title = get_the_date( 'F Y' ) . ' Archive - ' . $site_name;
+		} elseif ( is_search() ) {
+			$canonical  = home_url( '/?s=' . urlencode( get_search_query() ) );
+			$page_title = 'Search: ' . get_search_query() . ' - ' . $site_name;
+		} else {
+			$canonical  = home_url( '/' );
+			$page_title = $site_name . ' - Learn | Grow | Earn';
+		}
+
+		// Handle pagination correctly
+		if ( is_paged() ) {
+			$paged = get_query_var( 'paged' );
+			if ( $paged > 1 ) {
+				$canonical = trailingslashit( $canonical ) . 'page/' . $paged . '/';
+			}
+		}
 
 		echo "\n<!-- TopBlogTech SEO Engine -->\n";
-		echo '<meta name="description" content="' . esc_attr( $site_desc . ' - Independent blueprints on tech blogging, video algorithms, AdSense optimization, and modern digital creator workflows.' ) . '" />' . "\n";
+		echo '<meta name="description" content="' . esc_attr( $site_desc ) . '" />' . "\n";
 		echo '<link rel="canonical" href="' . esc_url( $canonical ) . '" />' . "\n";
 		echo '<meta property="og:type" content="website" />' . "\n";
 		echo '<meta property="og:title" content="' . esc_attr( $page_title ) . '" />' . "\n";
@@ -333,9 +372,9 @@ add_action( 'wp_head', 'tbt_inject_critical_styles', 999 );
 // Prevent theme auto-updates from overwriting custom patterns
 add_filter( 'auto_update_theme', '__return_false' );
 
-// Force author display name to always be 'TopBlogTech Editorial Team' for all public posts
+// Force author display name to always be 'Deepak Pandey' (Founder & Lead Editor)
 function tbt_filter_author_display_name( $display_name ) {
-	return 'TopBlogTech Editorial Team';
+	return 'Deepak Pandey';
 }
 add_filter( 'the_author', 'tbt_filter_author_display_name', 10, 1 );
 add_filter( 'get_the_author_display_name', 'tbt_filter_author_display_name', 10, 1 );
@@ -364,6 +403,18 @@ function tbt_handle_legacy_redirects() {
 		'/best-password-managers-1password-bitwarden-dashlane-2024/'  => '/best-password-managers-1password-bitwarden-dashlane-modern/',
 		'/n8n-vs-make-vs-zapier-ai-automation-comparison-2024/'       => '/n8n-vs-make-vs-zapier-ai-automation-comparison-modern/',
 		'/best-vpn-services-nordvpn-expressvpn-surfshark-2024/'       => '/best-vpn-services-nordvpn-expressvpn-surfshark-modern/',
+		// Category Consolidation Redirects
+		'/category/linkedin-growth/'                                  => '/category/youtube-growth/',
+		'/category/self-growth/'                                      => '/category/blogging/',
+		'/category/instagram/'                                        => '/category/youtube-growth/',
+		'/category/uncategorized/'                                    => '/category/blogging/',
+		'/category/affiliate-marketing/'                              => '/category/online-money/',
+		'/category/x-twitter/'                                        => '/category/youtube-growth/',
+		'/category/passive-income/'                                   => '/category/online-money/',
+		'/category/tech-reviews/'                                     => '/category/tech-ai/',
+		'/category/ai-tools/'                                         => '/category/tech-ai/',
+		'/category/technology/'                                       => '/category/tech-ai/',
+		'/category/finance-wealth/'                                   => '/category/finance/',
 	);
 
 	if ( isset( $legacy_301_map[ $request_uri ] ) ) {

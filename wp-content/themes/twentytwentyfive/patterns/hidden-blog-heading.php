@@ -31,7 +31,8 @@ $home_url = home_url( '/' );
 			<a href="<?php echo esc_url( $home_url . 'category/online-money/' ); ?>" class="tbt-pill">#MakeMoneyOnline</a>
 			<a href="<?php echo esc_url( $home_url . 'category/youtube-growth/' ); ?>" class="tbt-pill">#YouTubeGrowth</a>
 			<a href="<?php echo esc_url( $home_url . 'category/google-adsense/' ); ?>" class="tbt-pill">#AdSenseMastery</a>
-			<a href="<?php echo esc_url( $home_url . 'category/passive-income/' ); ?>" class="tbt-pill">#PassiveIncome</a>
+			<a href="<?php echo esc_url( $home_url . 'category/tech-ai/' ); ?>" class="tbt-pill">#TechAI</a>
+			<a href="<?php echo esc_url( $home_url . 'category/finance/' ); ?>" class="tbt-pill">#FinanceWealth</a>
 		</div>
 	</div>
 </section>
