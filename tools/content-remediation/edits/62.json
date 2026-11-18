@@ -1,0 +1,227 @@
+{
+    "id": 62,
+    "title": null,
+    "excerpt": "n8n, Make and Zapier compared on workflow design, AI agent features, billing units, self-hosting and n8n licensing, based on vendor documentation.",
+    "edits": [
+        {
+            "find": "Meanwhile, n8n has disrupted the market by offering a fair-code, self-hostable orchestrator equipped with first-class LangChain AI agent capabilities.</p>",
+            "replace": "Meanwhile, n8n offers a source-available (\"fair-code\") workflow tool that can be self-hosted and includes LangChain-based AI agent nodes.</p>",
+            "reason": "Hype removed"
+        },
+        {
+            "find": "using our blueprint for <a href=\"https://topblogtech.com/how-to-start-ai-automation-agency-aaa-blueprint/\">How to Start a No-Code AI Automation Agency (AAA): The Complete Blueprint</a>, selecting",
+            "replace": "using our guide on <a href=\"https://topblogtech.com/how-to-start-ai-automation-agency-aaa-blueprint/\">how to start a no-code AI automation agency</a>, selecting",
+            "reason": "Stale anchor title"
+        },
+        {
+            "find": "All assessments are based on published technical specifications, vendor documentation, and architectural evaluations.</p>",
+            "replace": "All assessments are based on published technical specifications and vendor documentation; TopBlogTech did not benchmark these platforms. Plan details were checked against the vendors' own pages in November 2026 and change often.</p>",
+            "reason": "Disclose no testing; date plan facts"
+        },
+        {
+            "find": "<a href=\"https://www.make.com/en/help\" rel=\"nofollow noopener\" target=\"_blank\">Make.com Help Center</a>",
+            "replace": "<a href=\"https://help.make.com/\" rel=\"nofollow noopener\" target=\"_blank\">Make.com Help Center</a>",
+            "reason": "Old help URL redirects; use current URL"
+        },
+        {
+            "find": "<h3 class=\"wp-block-heading\">3. n8n: Node-Based Directed Acyclic Graph (DAG) and Code-Native Freedom</h3>",
+            "replace": "<h3 class=\"wp-block-heading\">3. n8n: Node-Based Workflow Graph with Built-In Code</h3>",
+            "reason": "n8n workflows can contain loops; \"DAG\" is inaccurate"
+        },
+        {
+            "find": "n8n is built from the ground up as a Directed Acyclic Graph (DAG) workflow engine. Published under a fair-code model (Sustainable Use License), n8n bridges the gap between no-code visual modeling and full-stack software development.</p>",
+            "replace": "n8n is a node-based visual workflow engine that bridges the gap between no-code modeling and software development. Its source code is published under the <a href=\"https://github.com/n8n-io/n8n/blob/master/LICENSE.md\" rel=\"nofollow noopener\" target=\"_blank\">Sustainable Use License</a>, which n8n calls \"fair-code\": you may use and modify it for your own internal business purposes or for non-commercial or personal use, and may distribute it only free of charge for non-commercial purposes. It is therefore not an OSI-approved open-source license, and files marked \".ee\" (enterprise features) require a separate n8n Enterprise License. Agencies planning to host n8n for clients should read the license terms carefully.</p>",
+            "reason": "License terms verified on GitHub and stated accurately"
+        },
+        {
+            "find": "Developers have full access to global variables, runtime memory, and external npm packages, allowing for sophisticated data transformations that would require third-party microservices on Zapier or Make.</p>",
+            "replace": "On self-hosted instances, administrators can also allow external npm packages in the Code node, which makes some data transformations possible without a separate microservice.</p>",
+            "reason": "Overclaim about runtime access softened"
+        },
+        {
+            "find": "<h3 class=\"wp-block-heading\">Zapier: AI Actions and Zapier Central</h3>",
+            "replace": "<h3 class=\"wp-block-heading\">Zapier: AI by Zapier, Chatbots, and Tables</h3>",
+            "reason": "Zapier Central renamed (Agents, now AI by Zapier)"
+        },
+        {
+            "find": "<p>Zapier has embraced artificial intelligence through features like <strong>Zapier Central</strong>, AI Chatbots, AI Tables, and AI Actions. Zapier allows",
+            "replace": "<p>Zapier has added AI features such as Chatbots, Tables and agent-style automation. Its agent product, launched as Zapier Central and later renamed Zapier Agents, is now <a href=\"https://zapier.com/blog/zapier-agents-is-now-ai-by-zapier/\" rel=\"nofollow noopener\" target=\"_blank\">being folded into \"AI by Zapier\" steps inside regular Zaps</a>. Zapier allows",
+            "reason": "Stale product name updated with source"
+        },
+        {
+            "find": "However, technical analysis indicates clear architectural trade-offs:</p>",
+            "replace": "However, there are trade-offs to consider:</p>",
+            "reason": "Vague appeal to \"technical analysis\""
+        },
+        {
+            "find": "<li><strong>Absence of Native Vector Stores:</strong> While Zapier offers basic knowledge base uploads, it lacks native integration with production vector databases (such as Pinecone, Qdrant, or Weaviate) for enterprise Retrieval-Augmented Generation (RAG).</li>",
+            "replace": "<li><strong>Less RAG Plumbing:</strong> Zapier offers fewer building blocks for custom Retrieval-Augmented Generation (RAG) pipelines than n8n's dedicated vector store nodes.</li>",
+            "reason": "Unverified absolute claim softened"
+        },
+        {
+            "find": "<li><strong>High Execution Overhead:</strong> Passing conversational turns through multi-step Zaps rapidly consumes task quotas, increasing operational expenses.</li>",
+            "replace": "<li><strong>Task Consumption:</strong> AI steps are billed in tasks, so multi-step agent runs can use up a plan's task allowance quickly.</li>",
+            "reason": "Aligned with Zapier billing description"
+        },
+        {
+            "find": "<p>Make provides modular connectors for OpenAI (including GPT-4o and Assistants API), Anthropic Claude, Google Gemini, and Perplexity.",
+            "replace": "<p>Make provides modular connectors for major model providers such as OpenAI, Anthropic Claude and Google Gemini.",
+            "reason": "Stale model/API names removed"
+        },
+        {
+            "find": "<p>n8n is the clear architectural leader in autonomous AI workflow design. Rather than simply providing an API connector to an LLM endpoint, n8n integrates a native implementation of <strong>LangChain</strong> directly into its workflow canvas.</p>",
+            "replace": "<p>Of the three, n8n exposes the most AI-agent building blocks directly on its canvas. Rather than only providing an API connector to an LLM endpoint, <a href=\"https://docs.n8n.io/advanced-ai/langchain/overview/\" rel=\"nofollow noopener\" target=\"_blank\">n8n's AI nodes use LangChain's JavaScript framework</a>.</p>",
+            "reason": "Superlative softened; LangChain claim sourced"
+        },
+        {
+            "find": "<li><strong>AI Agent Nodes:</strong> Support ReAct (Reasoning + Acting), Conversational, and Plan-and-Execute agent architectures out of the box.</li>",
+            "replace": "<li><strong>AI Agent Node:</strong> Since n8n 1.82, the <a href=\"https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/\" rel=\"nofollow noopener\" target=\"_blank\">AI Agent node</a> works as a \"Tools Agent\" that lets the model decide which connected tools to call; the older agent-type setting is deprecated.</li>",
+            "reason": "Outdated agent types (ReAct/Plan-and-Execute deprecated)"
+        },
+        {
+            "find": "<li><strong>Vector Store Nodes:</strong> Native, direct connections to Pinecone, Qdrant, Supabase PGVector, Weaviate, Chroma, and In-Memory vector databases for scalable RAG pipelines.</li>",
+            "replace": "<li><strong>Vector Store Nodes:</strong> Dedicated nodes for vector databases such as Pinecone and Qdrant, plus an in-memory Simple Vector Store, for building RAG pipelines.</li>",
+            "reason": "List limited to verified nodes"
+        },
+        {
+            "find": "running on private hardware, ensuring complete data containment.</li>",
+            "replace": "running on private hardware, keeping prompts and data on your own infrastructure.</li>",
+            "reason": "Overclaim softened"
+        },
+        {
+            "find": "n8n provides an enterprise-grade framework that rivals custom Python LangChain or LlamaIndex scripts, while preserving visual maintainability.</p>",
+            "replace": "n8n can be a visual alternative to writing custom LangChain or LlamaIndex code for many use cases, although complex production systems still need engineering effort.</p>",
+            "reason": "Overclaim softened"
+        },
+        {
+            "find": "<strong>Tasks</strong> (Zapier), <strong>Operations</strong> (Make), and <strong>Executions</strong> (n8n).</p>",
+            "replace": "<strong>Tasks</strong> (Zapier), <strong>Credits</strong> (Make, formerly called operations), and <strong>Executions</strong> (n8n).</p>",
+            "reason": "Make now bills in credits"
+        },
+        {
+            "find": "<li><strong>Make.com (Operation-Based):</strong> An \"operation\" is consumed every time any module performs an action, including routers, filters, tools, data stores, and webhooks. That same 4-action workflow in Make with a router and an iterator might consume 6 to 10 operations per run.</li>",
+            "replace": "<li><strong>Make.com (Credit-Based):</strong> According to <a href=\"https://www.make.com/en/pricing\" rel=\"nofollow noopener\" target=\"_blank\">Make's pricing page</a>, \"every time a module in a scenario performs an action, it consumes credits.\" Most actions cost one credit and some AI features cost more, while routers and error-handler modules do not consume credits. Scenarios that iterate over many items use credits for each item processed.</li>",
+            "reason": "Corrected: routers do not consume; credits replaced operations; invented 6-10 figure removed"
+        },
+        {
+            "find": "<li><strong>n8n Cloud (Execution-Based):</strong> An \"execution\" encompasses the <em>entire run</em> of a workflow",
+            "replace": "<li><strong>n8n Cloud (Execution-Based):</strong> Per <a href=\"https://n8n.io/pricing/\" rel=\"nofollow noopener\" target=\"_blank\">n8n's pricing page</a>, an \"execution\" is a single run of your <em>entire</em> workflow",
+            "reason": "Sourced"
+        },
+        {
+            "find": "<li><strong>n8n Self-Hosted (Infrastructure-Based):</strong> When self-hosted on your own Virtual Private Server (VPS) or cloud cluster, there are <strong>zero per-execution fees</strong>. The only ongoing cost is your underlying server compute.</li>",
+            "replace": "<li><strong>n8n Self-Hosted (Infrastructure-Based):</strong> The self-hosted Community Edition does not charge per execution; your costs are the server, backups, security maintenance and your own time. Paid self-hosted Business and Enterprise plans add features and require a license key, and all self-hosted use is subject to the Sustainable Use License.</li>",
+            "reason": "Hidden costs and licensing clarified"
+        },
+        {
+            "find": "<p>The financial implications of these billing mechanisms become stark when scaling data-intensive applications. Below is an illustrative financial model based on published subscription tiers and realistic server hosting parameters:</p>",
+            "replace": "<p>Because each platform counts usage differently, the cheapest option depends on how many steps your workflows have and how many items they process. As listed on the vendors' pricing pages in November 2026 (prices change; check the links before deciding):</p>",
+            "reason": "Invented TCO table replaced with verified plan facts"
+        },
+        {
+            "find": "<!-- wp:table -->\n<figure class=\"wp-block-table\">\n<table>\n<thead>\n<tr>\n<th>Monthly Volume Metric</th>\n<th>Zapier (Estimated Cloud Tier)</th>\n<th>Make.com (Estimated Cloud Tier)</th>\n<th>n8n Cloud (Hosted Tier)</th>\n<th>n8n Self-Hosted (VPS Infrastructure)</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><strong>10,000 Events / Mo</strong></td>\n<td>~$100 - $130 / mo</td>\n<td>~$10 - $19 / mo</td>\n<td>~$25 - $55 / mo</td>\n<td>~$10 - $20 / mo (VPS compute)</td>\n</tr>\n<tr>\n<td><strong>50,000 Events / Mo</strong></td>\n<td>~$350 - $450 / mo</td>\n<td>~$35 - $60 / mo</td>\n<td>~$120 - $180 / mo</td>\n<td>~$20 - $40 / mo (VPS compute)</td>\n</tr>\n<tr>\n<td><strong>100,000 Events / Mo</strong></td>\n<td>~$600 - $800 / mo</td>\n<td>~$70 - $120 / mo</td>\n<td>~$250 - $350 / mo</td>\n<td>~$40 - $80 / mo (Scaled VPS)</td>\n</tr>\n<tr>\n<td><strong>500,000 Events / Mo</strong></td>\n<td>~$2,000 - $3,500+ / mo</td>\n<td>~$300 - $500 / mo</td>\n<td>Enterprise Custom Quote</td>\n<td>~$80 - $150 / mo (Cluster / Redis)</td>\n</tr>\n</tbody>\n</table>\n</figure>\n<!-- /wp:table -->\n\n<!-- wp:paragraph -->\n<p><em>Note: Pricing figures are industry estimates based on published platform tiers and standard cloud VPS costs. Real-world expenses vary based on multi-step branching, payload sizes, compute requirements, and third-party API token expenditures.</em></p>\n<!-- /wp:paragraph -->",
+            "replace": "<!-- wp:list -->\n<ul>\n<li><strong>Zapier:</strong> a Free plan with 100 tasks per month (two-step Zaps only); paid plans are priced by task volume, starting from $19.99 per month billed annually for 750 tasks on the Professional plan (<a href=\"https://zapier.com/pricing\" rel=\"nofollow noopener\" target=\"_blank\">Zapier pricing</a>).</li>\n<li><strong>Make:</strong> a Free plan with 1,000 credits per month, plus paid Core, Pro, Teams and Enterprise tiers priced by credit volume (<a href=\"https://www.make.com/en/pricing\" rel=\"nofollow noopener\" target=\"_blank\">Make pricing</a>).</li>\n<li><strong>n8n Cloud:</strong> Starter at €20 per month for 2,500 executions and Pro at €50 per month for 10,000 executions, both billed annually (<a href=\"https://n8n.io/pricing/\" rel=\"nofollow noopener\" target=\"_blank\">n8n pricing</a>). Self-hosting avoids execution fees but adds server and maintenance costs.</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p><em>Note: We have not modelled exact monthly costs because they depend on step counts, items processed, AI usage and third-party API fees. Estimate your own volume with each vendor's pricing calculator before committing.</em></p>\n<!-- /wp:paragraph -->",
+            "reason": "Invented cost-estimate table removed; replaced with verified plan facts"
+        },
+        {
+            "find": "Zapier quickly becomes cost-prohibitive. Make offers a dramatically more affordable cloud entry point for small-to-medium loads. For enterprise volume or agency operations handling hundreds of thousands of events, self-hosting n8n on <a href=\"https://topblogtech.com/best-web-hosting-wordpress-speed-tests-comparison/\">high-performance VPS and cloud hosting infrastructure</a> delivers unmatched cost efficiency.</p>",
+            "replace": "Zapier's per-task billing can become expensive at high volumes. Make's credit model is often cheaper for complex multi-step scenarios. At very high volumes, self-hosting n8n (see our <a href=\"https://topblogtech.com/best-web-hosting-wordpress-speed-tests-comparison/\">web hosting comparison</a> for hosting basics) can cost the least, provided you have the skills to run, update and secure the server. Compare against your actual workflows rather than general rules.</p>",
+            "reason": "Unsupported superlatives softened"
+        },
+        {
+            "find": "Both companies maintain stringent compliance standards, including SOC 2 Type II certification, GDPR compliance, and enterprise data encryption in transit and at rest. However, your data inevitably transits",
+            "replace": "Both publish security and compliance documentation; check their trust pages for current certifications (such as SOC 2 reports) and whether they will sign the agreements your industry requires (for example, a HIPAA business associate agreement). Either way, your data transits",
+            "reason": "Unverified certification claims generalised"
+        },
+        {
+            "find": "However, the runtime environment is strictly sandboxed with small memory limits (typically 128 MB), short execution timeouts (1 to 10 seconds), and restricted access to external libraries.</li>",
+            "replace": "According to <a href=\"https://help.zapier.com/hc/en-us/articles/8496310939021\" rel=\"nofollow noopener\" target=\"_blank\">Zapier's documentation</a>, code runs in a sandbox with plan-dependent runtime and memory limits and a 6 MB input/output limit, and adding public npm packages requires a paid plan.</li>",
+            "reason": "Stale limits replaced with documented ones"
+        },
+        {
+            "find": "<li><strong>Make.com:</strong> Does not feature a dedicated raw code execution node. Instead, Make provides a comprehensive library of inline functions (math, string parsing, dates, regex, and array mapping). While remarkably capable for manipulating data strings, writing complex algorithmic logic or processing raw binary files without external webhooks remains difficult.</li>",
+            "replace": "<li><strong>Make.com:</strong> Provides a comprehensive library of inline functions (math, string parsing, dates, regex, and array mapping). On paid plans, the <a href=\"https://apps.make.com/code\" rel=\"nofollow noopener\" target=\"_blank\">Make Code app</a> (in open beta as of November 2026) runs JavaScript or Python in a sandbox with CPU, memory and time limits, and bills credits per second of execution; custom libraries are Enterprise-only.</li>",
+            "reason": "Outdated: Make now has a Code app"
+        },
+        {
+            "find": "Zapier treats incoming webhooks as a \"Premium\" feature, gating instant event triggers behind paid subscriptions.",
+            "replace": "Zapier's webhook features are available on paid plans, not on the Free plan.",
+            "reason": "Aligned with Zapier pricing page"
+        },
+        {
+            "find": "<td>7,000+ pre-built integrations</td>\n<td>2,000+ pre-built integrations</td>\n<td>400+ pre-built nodes + npm community nodes</td>",
+            "replace": "<td>9,000+ apps (per Zapier, Nov 2026)</td>\n<td>3,000+ native apps (per Make, Nov 2026)</td>\n<td>2,000+ integrations listed (per n8n, Nov 2026), plus community nodes</td>",
+            "reason": "Integration counts updated from vendor pages"
+        },
+        {
+            "find": "<td>Visual node-based Directed Acyclic Graph (DAG)</td>",
+            "replace": "<td>Visual node-based workflow graph</td>",
+            "reason": "DAG inaccurate"
+        },
+        {
+            "find": "<td>Basic prompt steps, AI actions, Zapier Central</td>\n<td>Modular OpenAI, Claude, and Gemini connectors</td>\n<td>Full LangChain engine, RAG nodes, autonomous agents, vector stores</td>",
+            "replace": "<td>AI by Zapier steps, Chatbots, AI actions</td>\n<td>Modular OpenAI, Claude, and Gemini connectors</td>\n<td>LangChain-based AI Agent, RAG and vector store nodes</td>",
+            "reason": "Stale product name; overclaim"
+        },
+        {
+            "find": "<td>No (Cloud API only)</td>\n<td>No (Cloud API only)</td>",
+            "replace": "<td>No native local-model option (cloud service)</td>\n<td>No native local-model option (cloud service)</td>",
+            "reason": "Precision"
+        },
+        {
+            "find": "<td>No (SaaS only; Enterprise on-premise rare)</td>",
+            "replace": "<td>No (cloud service)</td>",
+            "reason": "Unverified on-premise claim"
+        },
+        {
+            "find": "<td>Per module operation</td>\n<td>Per workflow execution (Cloud) or Free (Self-hosted)</td>",
+            "replace": "<td>Credits per module action</td>\n<td>Per workflow execution (Cloud); no execution fees when self-hosting the Community Edition</td>",
+            "reason": "Make credits; n8n self-host clarified"
+        },
+        {
+            "find": "<td>Inline formulas & regex (no raw code node)</td>",
+            "replace": "<td>Inline functions; Make Code app (JS/Python, paid plans, beta)</td>",
+            "reason": "Outdated"
+        },
+        {
+            "find": "<td>100% private data sovereignty when self-hosted</td>",
+            "replace": "<td>Full control over hosting location when self-hosted</td>",
+            "reason": "Overclaim softened"
+        },
+        {
+            "find": "that only maintain an official integration on Zapier’s 7,000+ app marketplace.</li>",
+            "replace": "that only maintain an official integration in Zapier’s large app directory.</li>",
+            "reason": "Stale count"
+        },
+        {
+            "find": "without incurring Zapier’s prohibitive task fees.</li>",
+            "replace": "without paying per task on Zapier.</li>",
+            "reason": "Loaded wording"
+        },
+        {
+            "find": "customer onboarding journeys handling between 10,000 and 100,000 operations monthly.</li>",
+            "replace": "customer onboarding journeys at moderate monthly volumes.</li>",
+            "reason": "Arbitrary unsupported range"
+        },
+        {
+            "find": "where cloud-based per-task pricing models would cost thousands of dollars.</li>",
+            "replace": "where per-task or per-credit cloud pricing becomes a significant cost.</li>",
+            "reason": "Unsupported figure"
+        },
+        {
+            "find": "<p>In mature technical environments, modern organizations increasingly adopt a <strong>hybrid automation architecture</strong>.",
+            "replace": "<p>Some organizations use a <strong>hybrid automation architecture</strong>.",
+            "reason": "Unsupported trend claim"
+        },
+        {
+            "find": "and privacy-conscious organizations seeking unlimited scale, deep LangChain agent orchestration, and complete data ownership, <strong>n8n</strong> is the clear technical victor.</p>",
+            "replace": "and privacy-conscious organizations that want large-scale self-hosting, LangChain-based agents, and control over where data is processed, <strong>n8n</strong> is often the strongest technical fit, provided its Sustainable Use License suits your use case.</p>",
+            "reason": "Overclaim softened; licensing caveat"
+        },
+        {
+            "find": "<p><em>Editorial Note: This guide was researched and compiled by the TopBlogTech Editorial Team. We regularly update our content to reflect the latest developments. Last reviewed: November 2026. If you notice any inaccuracies, please <a href=\"https://topblogtech.com/contact-us/\">contact our editorial desk</a>.</em></p>",
+            "replace": "<p><em>Editorial note: This comparison was compiled by TopBlogTech from vendor documentation and pricing pages; we did not benchmark these platforms ourselves. Plans, prices and features change often, so confirm details on each vendor's site. Last reviewed: November 2026. Spotted an error? Please <a href=\"https://topblogtech.com/contact-us/\">contact us</a>.</em></p>",
+            "reason": "Remove team/desk claims; disclose no testing"
+        }
+    ]
+}

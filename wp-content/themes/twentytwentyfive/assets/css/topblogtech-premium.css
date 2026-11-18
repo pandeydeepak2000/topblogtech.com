@@ -623,7 +623,8 @@ header {
 /* ==========================================================================
    Standard Content Pages (Privacy Policy, Terms, About, Contact, Policies)
    ========================================================================== */
-.page .wp-block-post-title,
+/* Hide stray legacy titles, but never the page's own H1 rendered by templates/page.html */
+.page .wp-block-post-title:not(.tbt-page-title),
 .page .entry-title {
   display: none !important;
 }
@@ -1494,3 +1495,73 @@ header {
 }
 
 
+
+/* ==========================================================================
+   Page title (H1) — pages previously rendered without any H1
+   ========================================================================== */
+.tbt-page-title {
+  font-family: var(--tbt-font-heading) !important;
+  font-size: clamp(1.9rem, 4vw, 2.6rem) !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  color: var(--tbt-text-dark) !important;
+  margin: 0 0 24px 0 !important;
+  letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   Contact form [tbt_contact_form]
+   ========================================================================== */
+.tbt-contact-form { margin: 24px 0 32px; }
+.tbt-contact-form label { font-weight: 600; }
+.tbt-contact-form input[type="text"],
+.tbt-contact-form input[type="email"],
+.tbt-contact-form textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  margin-top: 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+  background: #ffffff;
+  color: #0f172a;
+}
+.tbt-contact-form input:focus,
+.tbt-contact-form textarea:focus { outline: 3px solid #93c5fd; outline-offset: 1px; border-color: #2563eb; }
+.tbt-btn-submit {
+  background: #2563eb;
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 22px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.tbt-btn-submit:hover, .tbt-btn-submit:focus-visible { background: #1d4ed8; }
+.tbt-form-privacy { font-size: 0.9rem; color: #475569; }
+.tbt-form-notice { padding: 12px 16px; border-radius: 8px; font-weight: 600; }
+.tbt-form-ok { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.tbt-form-err { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+/* "Updated" date on single posts (core post-date block, displayType: modified) */
+.tbt-updated-badge::before { content: "Updated "; }
+
+/* Wide comparison tables: scroll inside their own box instead of widening the page on phones */
+.wp-block-post-content .wp-block-table,
+.wp-block-post-content figure:has(> table) { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+@media (max-width: 782px) {
+  .wp-block-post-content table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .wp-block-post-content table th,
+  .wp-block-post-content table td { min-width: 120px; }
+}
+
+/* Footer bottom bar: let the link row and copyright wrap on small screens (caused page-wide horizontal scroll) */
+.tbt-footer-bottom-links { flex-wrap: wrap; row-gap: 6px; }
+.tbt-footer-bottom-inner > * { min-width: 0; max-width: 100%; }
+@media (max-width: 600px) {
+  .tbt-footer-bottom-inner { justify-content: center; text-align: center; }
+  .tbt-footer-bottom-links { justify-content: center; }
+}

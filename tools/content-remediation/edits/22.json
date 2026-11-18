@@ -1,0 +1,37 @@
+{
+    "id": 22,
+    "title": null,
+    "excerpt": "About TopBlogTech.com: a one-person site founded in 2026 by Deepak Pandey in India, publishing research-based guides on SEO, WordPress, blogging and tools.",
+    "edits": [
+        {
+            "find": "founder Deepak Pandey started this publication to document what actually works in modern organic search and digital monetization.</p>",
+            "replace": "founder Deepak Pandey started this publication to document what actually works in modern organic search and digital monetization. TopBlogTech is a one-person site: Deepak runs it alone and is responsible for every guide published here.</p>",
+            "reason": "State plainly that the site is run by one person (no team)"
+        },
+        {
+            "find": "every guide on TopBlogTech is independently researched, compiled directly from published technical documentation (such as Google Search Central, MDN Web Docs, RFC specifications, and W3C standards), and verified against real-world testing environments.</p>",
+            "replace": "every guide on TopBlogTech is researched from official and published documentation (such as Google Search Central, MDN Web Docs, RFC specifications, and W3C standards) and independent published sources, which are linked in the text. Guides are reviewed and updated when the underlying products, policies or prices change. TopBlogTech does not run a testing lab or publish its own benchmarks; where a guide mentions performance figures, it cites the source.</p>",
+            "reason": "Removed unsupported \"verified against real-world testing environments\" claim; research-based wording"
+        },
+        {
+            "find": "<li><strong>Blogging Architecture &amp; Web Hosting:</strong> Server benchmarking, TTFB analysis, caching hierarchies, and WordPress infrastructure.</li>",
+            "replace": "<li><strong>Blogging Architecture &amp; Web Hosting:</strong> Choosing hosting, understanding TTFB and caching, and WordPress infrastructure.</li>",
+            "reason": "\"Server benchmarking\" implied first-hand benchmarks"
+        },
+        {
+            "find": "<h2 class=\"wp-block-heading\">Editorial Independence &amp; Fact-Checking</h2>",
+            "replace": "<h2 class=\"wp-block-heading\">Editorial Independence</h2>",
+            "reason": "No separate fact-checking function exists"
+        },
+        {
+            "find": "Our comparative guides evaluate software tools and digital platforms based on publicly available specifications, vendor pricing documentation, security whitepapers, and verified user feedback. For full details",
+            "replace": "Our comparative guides evaluate software tools and digital platforms based on publicly available specifications, vendor pricing documentation and security whitepapers. The site does not currently display ads or contain affiliate links; if that changes, it will be clearly disclosed. For full details",
+            "reason": "Removed unverifiable \"verified user feedback\"; disclosed current monetisation status truthfully"
+        },
+        {
+            "find": "we commit to correcting them promptly and transparently. If you notice any inaccuracy in any guide,",
+            "replace": "we commit to correcting them promptly and transparently. Reader reports are an important check for a one-person site: if you notice any inaccuracy in any guide,",
+            "reason": "Explain how errors are reported in a one-person context"
+        }
+    ]
+}

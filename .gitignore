@@ -1,12 +1,44 @@
-# WordPress Cache and temporary logs
+# ==========================================================================
+# NEVER COMMIT: credentials, database dumps, backups, archives, logs
+# (the repository is PUBLIC on GitHub)
+# ==========================================================================
+wp-config.php
+wp-config-local.php
+.env
+.env.*
+*.sql
+*.sql.*
+*.sqlite
+*.zip
+*.tar
+*.tar.*
+*.tgz
+*.7z
+*.rar
+*.bak
+*.bak_*
+*.bak.*
+*.backup
+*.old
+*.orig
+*.swp
+error_log
+*.log
+private-backups/
+tbt-remediation-backups/
+
+# WordPress cache, backups and plugin runtime data
 wp-content/cache/
 wp-content/backuply/
 wp-content/speedycache-config/
-error_log
-*.log
+wp-content/upgrade/
+wp-content/debug.log
 
-# Windows thumbnail caches
+# OS / editor
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+.DS_Store
+.vscode/
+.idea/

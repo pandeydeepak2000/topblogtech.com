@@ -1,0 +1,117 @@
+{
+    "id": 50,
+    "title": null,
+    "excerpt": "Technical SEO checklist for Core Web Vitals: LCP, INP and CLS thresholds from web.dev, fixes for slow servers, scripts and layout shifts, and crawl hygiene.",
+    "edits": [
+        {
+            "find": "Search engines evaluate the underlying engineering quality of a domain, prioritizing websites that provide rapid, responsive, and visually stable browsing experiences. At the core of Google's page experience signals are Core Web Vitals:",
+            "replace": "Google’s ranking systems also consider page experience, and a central part of that is Core Web Vitals:",
+            "reason": "Overstated ranking claim"
+        },
+        {
+            "find": "as outlined in our guide on <a href=\"https://topblogtech.com/how-to-start-a-tech-finance-blog-modern/\">How to Start a Tech & Finance Blog (And Make It Profitable Fast)</a>,",
+            "replace": "as outlined in our guide on <a href=\"https://topblogtech.com/how-to-start-a-tech-finance-blog-modern/\">how to start a tech &amp; finance blog</a>,",
+            "reason": "Outdated hype anchor title"
+        },
+        {
+            "find": "webmasters and digital engineers can systematically resolve page experience bottlenecks and satisfy Google's technical ranking criteria.</p>",
+            "replace": "site owners can find and fix common page experience problems. Good Core Web Vitals help users, but they do not guarantee higher rankings; relevant, helpful content comes first.</p>",
+            "reason": "Implied ranking guarantee"
+        },
+        {
+            "find": "<h2 class=\"wp-block-heading\">Understanding Core Web Vitals: The 2026 Performance Framework</h2>",
+            "replace": "<h2 class=\"wp-block-heading\">Understanding Core Web Vitals: LCP, INP, and CLS</h2>",
+            "reason": "Year-stamped heading"
+        },
+        {
+            "find": "To provide a satisfactory user experience, Google guidelines mandate that LCP occur within <strong>2.5 seconds</strong>",
+            "replace": "According to <a href=\"https://web.dev/articles/vitals\" rel=\"nofollow noopener\" target=\"_blank\">web.dev’s Web Vitals guidance</a>, a good user experience means LCP occurs within <strong>2.5 seconds</strong>",
+            "reason": "Cite primary source (verified thresholds on web.dev)"
+        },
+        {
+            "find": "Having officially replaced First Input Delay (FID), INP observes",
+            "replace": "INP replaced First Input Delay (FID) as a Core Web Vital in March 2024. It observes",
+            "reason": "Add replacement date"
+        },
+        {
+            "find": "an INP value below <strong>200 milliseconds</strong> represents good responsiveness. A measurement ranging from 200 milliseconds to 500 milliseconds indicates",
+            "replace": "an INP of <strong>200 milliseconds or less</strong> represents good responsiveness. A value above 200 and up to 500 milliseconds indicates",
+            "reason": "Threshold wording per web.dev (≤200 ms)"
+        },
+        {
+            "find": "Google specifies that a passing CLS score must remain below <strong>0.10</strong> at the 75th percentile.",
+            "replace": "A good CLS score is <strong>0.1 or less</strong> at the 75th percentile.",
+            "reason": "Threshold wording per web.dev (≤0.1)"
+        },
+        {
+            "find": "If the origin server takes over 800 milliseconds to deliver the document, remaining rendering budgets become critically constrained.</p>",
+            "replace": "web.dev’s <a href=\"https://web.dev/articles/ttfb\" rel=\"nofollow noopener\" target=\"_blank\">TTFB guidance</a> says most sites should aim for a TTFB of 0.8 seconds or less; a slow server response leaves little of the 2.5-second budget for everything else.</p>",
+            "reason": "Source the 800 ms figure"
+        },
+        {
+            "find": "updated software stacks (such as PHP 8.2 or 8.3 with OPcache configured)",
+            "replace": "a <a href=\"https://www.php.net/supported-versions.php\" rel=\"nofollow noopener\" target=\"_blank\">currently supported PHP version</a> with OPcache enabled",
+            "reason": "PHP 8.2 security support ends 31 Dec 2026 (php.net)"
+        },
+        {
+            "find": "As analyzed in our comparative review of the <a href=\"https://topblogtech.com/best-web-hosting-wordpress-speed-tests-comparison/\">Best Web Hosting for WordPress (Speed Tests, TTFB & Pricing Compared)</a>, server-level caching mechanisms—such as LiteSpeed Cache, Nginx FastCGI micro-caching, and Redis object caching—eliminate repetitive database queries and dynamic template assembly for uncached visitor requests.</p>",
+            "replace": "As discussed in our guide to <a href=\"https://topblogtech.com/best-web-hosting-wordpress-speed-tests-comparison/\">web hosting for WordPress</a>, server-level caching (such as LiteSpeed Cache, Nginx FastCGI caching, and Redis object caching) reduces repeated database queries and template rendering for repeat requests.</p>",
+            "reason": "Implied own speed tests; logical error (\"uncached\")"
+        },
+        {
+            "find": "to inform the browser engine of the critical asset before the CSS parser evaluates inline styles.</li>",
+            "replace": "so the browser discovers the critical image early (if the image is already in the HTML, <code>fetchpriority=\"high\"</code> on the <code>&lt;img&gt;</code> itself may be enough).</li>",
+            "reason": "Technically muddled explanation"
+        },
+        {
+            "find": "which consistently deliver file size reductions of 25% to 50% compared to legacy JPEG and PNG formats without noticeable fidelity loss.",
+            "replace": "which often produce smaller files than JPEG and PNG at similar visual quality (results vary by image).",
+            "reason": "Unsourced percentage"
+        },
+        {
+            "find": "<p>Third-party scripts represent the most frequent cause of degraded INP in content websites. Marketing pixels, customer support widgets, behavioral heatmaps, and unmanaged Google Tag Manager containers execute extensive JavaScript during visitor sessions. For content creators managing monetization channels, such as those covered in our analysis of <a href=\"https://topblogtech.com/top-7-ai-tools-to-make-money-online-modern/\">Top 7 AI Tools to Make Money Online (Beginner to Pro Guide)</a>, third-party script bloat must be strictly controlled.</p>",
+            "replace": "<p>Third-party scripts are a common cause of poor INP on content websites. Marketing pixels, support widgets, heatmaps, and unmanaged Google Tag Manager containers can run a lot of JavaScript during a visit, so keep them under control.</p>",
+            "reason": "Unsourced superlative; irrelevant internal link"
+        },
+        {
+            "find": "Technical guidelines recommend maintaining a DOM depth under 32 levels and a total DOM node count below 1,400 elements.",
+            "replace": "<a href=\"https://developer.chrome.com/docs/lighthouse/performance/dom-size\" rel=\"nofollow noopener\" target=\"_blank\">Lighthouse</a> warns when the page body has more than about 800 DOM nodes and flags an error above about 1,400.",
+            "reason": "Correct and source DOM-size thresholds (no published depth limit)"
+        },
+        {
+            "find": "such as those evaluated in our review of <a href=\"https://topblogtech.com/top-highest-cpc-niches-google-adsense-blogging/\">Top 10 Highest CPC Niches for Google AdSense & Blogging (Up to $50/Click)</a>, mitigating ad layout shift is crucial for preserving both user engagement and compliance with Google monetization policies.</p>",
+            "replace": "such as those discussed in our guide to <a href=\"https://topblogtech.com/top-highest-cpc-niches-google-adsense-blogging/\">high-CPC niches for AdSense and blogging</a>, reserving space for ads helps stop content from jumping under a reader’s finger.</p>",
+            "reason": "Hype anchor; unsupported policy claim"
+        },
+        {
+            "find": "(<code>&lt;link rel=\"canonical\" href=\"https://example.com/canonical-url/\"&gt;</code>)",
+            "replace": "(<code>&lt;link rel=\"canonical\" href=\"[full URL of this page]\"&gt;</code>)",
+            "reason": "example.com placeholder was being treated as a link (404); use non-URL placeholder"
+        },
+        {
+            "find": "Webmasters should cross-reference technical standards outlined by the <a href=\"https://www.w3.org/standards/webdesign/performance\" rel=\"nofollow noopener\" target=\"_blank\">W3C Web Performance Standards</a> to ensure semantic data integrity across diverse browser viewports.</p>",
+            "replace": "Google’s <a href=\"https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data\" rel=\"nofollow noopener\" target=\"_blank\">introduction to structured data</a> notes that it recommends JSON-LD where your site setup allows it; validate markup with the Rich Results Test.</p>",
+            "reason": "Misattributed source (W3C performance page is unrelated to structured data)"
+        },
+        {
+            "find": "<!-- wp:paragraph -->\n<p>For entrepreneurs operating digital publications or diversifying digital revenue, as explored in our guide on <a href=\"https://topblogtech.com/creating-multiple-streams-of-income-online/\">Creating Multiple Streams of Income Online (The 7-Pillar Blueprint)</a>, building robust technical architecture ensures that content assets retain their search engine visibility over long-term commercial cycles.</p>\n<!-- /wp:paragraph -->\n\n",
+            "replace": "",
+            "reason": "Filler paragraph with forced internal link"
+        },
+        {
+            "find": "Google's ranking evaluation is based entirely on real user monitoring (RUM) captured through the Chrome User Experience Report.",
+            "replace": "Google’s Core Web Vitals assessment (for example, in Search Console) uses real-user field data from the Chrome User Experience Report, not lab scores.",
+            "reason": "Overstated \"ranking based entirely on\" claim"
+        },
+        {
+            "find": "update the server runtime to PHP 8.2 or 8.3 with OPcache active,",
+            "replace": "update to a currently supported PHP version with OPcache active,",
+            "reason": "Outdated PHP versions"
+        },
+        {
+            "find": "This guide was researched and compiled by the TopBlogTech Editorial Team. We regularly update our content to reflect the latest developments. Last reviewed: November 2026. If you notice any inaccuracies, please <a href=\"https://topblogtech.com/contact-us/\">contact our editorial desk</a>.",
+            "replace": "This guide was researched and written by TopBlogTech using the official documentation and published sources linked above. Last reviewed: November 2026. If you notice an inaccuracy, please <a href=\"https://topblogtech.com/contact-us/\">contact us</a> (see our <a href=\"https://topblogtech.com/corrections-policy/\">corrections policy</a>).",
+            "reason": "Remove implied editorial team/desk"
+        }
+    ]
+}

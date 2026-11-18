@@ -11,7 +11,6 @@
  * @since Twenty Twenty-Five 1.0
  */
 
-$logo_url = home_url( '/wp-content/uploads/topblogtech-nav-logo.png' );
 $home_url = home_url( '/' );
 ?>
 <!-- wp:html -->
@@ -19,13 +18,16 @@ $home_url = home_url( '/' );
 	<div class="tbt-header-inner">
 		<div class="tbt-brand">
 			<a href="<?php echo esc_url( $home_url ); ?>" class="tbt-logo-link" title="TopBlogTech - Learn | Grow | Earn">
-				<img src="<?php echo esc_url( $logo_url ); ?>" alt="TopBlogTech Logo" class="tbt-logo-img" />
+				<picture>
+					<source type="image/webp" srcset="<?php echo esc_url( home_url( '/wp-content/uploads/topblogtech-nav-logo-132h.webp' ) ); ?>">
+					<img src="<?php echo esc_url( home_url( '/wp-content/uploads/topblogtech-nav-logo-132h.png' ) ); ?>" alt="TopBlogTech" class="tbt-logo-img" width="223" height="132" fetchpriority="high" decoding="async" />
+				</picture>
 			</a>
 		</div>
 
 		<nav class="tbt-nav" id="tbt-main-nav" aria-label="Main Navigation">
 			<ul class="tbt-nav-list">
-				<li><a href="<?php echo esc_url( $home_url ); ?>" class="tbt-nav-item active">Home</a></li>
+				<li><a href="<?php echo esc_url( $home_url ); ?>" class="tbt-nav-item">Home</a></li>
 				<li><a href="<?php echo esc_url( $home_url . 'category/blogging/' ); ?>" class="tbt-nav-item">Blogging</a></li>
 				<li><a href="<?php echo esc_url( $home_url . 'category/online-money/' ); ?>" class="tbt-nav-item">Online Money</a></li>
 				<li><a href="<?php echo esc_url( $home_url . 'category/youtube-growth/' ); ?>" class="tbt-nav-item">YouTube</a></li>

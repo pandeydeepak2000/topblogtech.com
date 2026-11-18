@@ -5,11 +5,35 @@
 # 1. Disable Directory Browsing
 Options -Indexes
 
-# 2. Block access to wp-config.php and database/system backup files
-<FilesMatch "^(wp-config\.php|\.htaccess|\.user\.ini|php\.ini|.*\.sql|.*\.log|readme\.html|license\.txt)$">
-    Order allow,deny
-    Deny from all
+# 2. Block access to configuration, backups, database dumps, archives, logs and docs.
+#    The previous rule only matched names ENDING in ".sql", so
+#    "*.sql.bak_*" dumps and "*.zip" backups were publicly downloadable.
+<FilesMatch "^(wp-config\.php|wp-config-sample\.php|\.htaccess|\.user\.ini|php\.ini|error_log|readme\.html|license\.txt|README\.md|composer\.(json|lock)|package(-lock)?\.json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
+<FilesMatch "(\.(sql|sqlite|db|zip|tar|tgz|7z|rar|bak|backup|old|orig|save|swp|tmp|log|md|ini|sh|env|dist)$)|(\.(sql|tar)\.)|(\.bak[._-])">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Version control metadata, maintenance tooling and private reports are never public.
+    RewriteRule (^|/)\.(git|svn|github|vscode|idea)(/|$) - [R=404,L,NC]
+    RewriteRule ^(tools|audit-reports|private-backups)(/|$) - [R=404,L,NC]
+    # Never execute scripts from the uploads directory.
+    RewriteRule ^wp-content/uploads/.*\.(php[0-9]?|phtml|phar|pl|py|cgi|sh)$ - [F,L,NC]
+</IfModule>
 
 # 3. Block XML-RPC (Prevents 95% of Brute-Force & DDoS Attacks)
 <Files "xmlrpc.php">
@@ -21,8 +45,18 @@ Options -Indexes
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
-    Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+</IfModule>
+
+# 4b. Force HTTPS (loop-safe behind Cloudflare: uses the visitor scheme that
+#     Cloudflare passes in X-Forwarded-Proto; falls back to %{HTTPS} when the
+#     header is absent, i.e. direct origin access).
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP:X-Forwarded-Proto} =http [OR]
+    RewriteCond %{HTTPS}:%{HTTP:X-Forwarded-Proto} =off:
+    RewriteRule ^ https://topblogtech.com%{REQUEST_URI} [R=301,L,NE]
 </IfModule>
 
 # 5. Block SQL Injection and Malicious URL Queries
@@ -51,6 +85,13 @@ Options -Indexes
 <IfModule mod_expires.c>
     ExpiresActive on
     ExpiresDefault "access plus 1 month"
+    # HTML, feeds and sitemaps must revalidate so content fixes are seen immediately.
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType text/xml "access plus 0 seconds"
+    ExpiresByType application/xml "access plus 0 seconds"
+    ExpiresByType application/rss+xml "access plus 0 seconds"
+    ExpiresByType application/json "access plus 0 seconds"
+    ExpiresByType font/woff2 "access plus 1 year"
     ExpiresByType text/css "access plus 1 year"
     ExpiresByType application/javascript "access plus 1 year"
     ExpiresByType image/jpg "access plus 1 year"
@@ -68,29 +109,38 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
 
 # 301 Permanent Redirects: Legacy -2024 Slugs to Modern Canonical URLs & Deprecated Pages
-RewriteRule ^sample-page/?$ / [R=301,L]
-RewriteRule ^how-to-start-a-tech-finance-blog-2024/?$ /how-to-start-a-tech-finance-blog-modern/ [R=301,L]
-RewriteRule ^best-passive-income-ideas-2024/?$ /best-passive-income-ideas-modern/ [R=301,L]
-RewriteRule ^top-7-ai-tools-to-make-money-online-2024/?$ /top-7-ai-tools-to-make-money-online-modern/ [R=301,L]
-RewriteRule ^high-yield-savings-accounts-vs-index-funds-2024/?$ /high-yield-savings-accounts-vs-index-funds-modern/ [R=301,L]
-RewriteRule ^high-income-digital-skills-to-learn-2024/?$ /high-income-digital-skills-to-learn-modern/ [R=301,L]
-RewriteRule ^dividend-growth-investing-passive-income-portfolio-2024/?$ /dividend-growth-investing-passive-income-portfolio-modern/ [R=301,L]
-RewriteRule ^best-password-managers-1password-bitwarden-dashlane-2024/?$ /best-password-managers-1password-bitwarden-dashlane-modern/ [R=301,L]
-RewriteRule ^n8n-vs-make-vs-zapier-ai-automation-comparison-2024/?$ /n8n-vs-make-vs-zapier-ai-automation-comparison-modern/ [R=301,L]
-RewriteRule ^best-vpn-services-nordvpn-expressvpn-surfshark-2024/?$ /best-vpn-services-nordvpn-expressvpn-surfshark-modern/ [R=301,L]
+RewriteRule ^sample-page/?$ https://topblogtech.com/ [R=301,L]
+RewriteRule ^how-to-start-a-tech-finance-blog-2024/?$ https://topblogtech.com/how-to-start-a-tech-finance-blog-modern/ [R=301,L]
+RewriteRule ^best-passive-income-ideas-2024/?$ https://topblogtech.com/best-passive-income-ideas-modern/ [R=301,L]
+RewriteRule ^top-7-ai-tools-to-make-money-online-2024/?$ https://topblogtech.com/top-7-ai-tools-to-make-money-online-modern/ [R=301,L]
+RewriteRule ^high-yield-savings-accounts-vs-index-funds-2024/?$ https://topblogtech.com/high-yield-savings-accounts-vs-index-funds-modern/ [R=301,L]
+RewriteRule ^high-income-digital-skills-to-learn-2024/?$ https://topblogtech.com/high-income-digital-skills-to-learn-modern/ [R=301,L]
+RewriteRule ^dividend-growth-investing-passive-income-portfolio-2024/?$ https://topblogtech.com/dividend-growth-investing-passive-income-portfolio-modern/ [R=301,L]
+RewriteRule ^best-password-managers-1password-bitwarden-dashlane-2024/?$ https://topblogtech.com/best-password-managers-1password-bitwarden-dashlane-modern/ [R=301,L]
+RewriteRule ^n8n-vs-make-vs-zapier-ai-automation-comparison-2024/?$ https://topblogtech.com/n8n-vs-make-vs-zapier-ai-automation-comparison-modern/ [R=301,L]
+RewriteRule ^best-vpn-services-nordvpn-expressvpn-surfshark-2024/?$ https://topblogtech.com/best-vpn-services-nordvpn-expressvpn-surfshark-modern/ [R=301,L]
+
+# 301: wrong slugs that were linked from articles (returned 404 until 2026-11-18)
+RewriteRule ^highest-cpc-niches-for-google-adsense/?$ https://topblogtech.com/top-highest-cpc-niches-google-adsense-blogging/ [R=301,L]
+RewriteRule ^create-sell-digital-products-online-with-ai/?$ https://topblogtech.com/create-sell-digital-products-online-ai-blueprint/ [R=301,L]
+RewriteRule ^best-web-hosting-for-wordpress-speed-tests/?$ https://topblogtech.com/best-web-hosting-wordpress-speed-tests-comparison/ [R=301,L]
+RewriteRule ^no-code-ai-automation-agency-blueprint/?$ https://topblogtech.com/how-to-start-ai-automation-agency-aaa-blueprint/ [R=301,L]
+RewriteRule ^best-ai-seo-tools-to-rank-on-google/?$ https://topblogtech.com/best-ai-seo-tools-rank-google-tested/ [R=301,L]
+RewriteRule ^how-to-grow-your-audience-on-x-twitter/?$ https://topblogtech.com/how-to-grow-your-audience-on-x-com/ [R=301,L]
+RewriteRule ^faceless-youtube-channel-with-ai-blueprint/?$ https://topblogtech.com/how-to-build-a-high-rpm-faceless-youtube-channel-ai/ [R=301,L]
 
 # 301 Permanent Redirects: Category Consolidation (18 down to 6)
-RewriteRule ^category/linkedin-growth/?$ /category/youtube-growth/ [R=301,L]
-RewriteRule ^category/self-growth/?$ /category/blogging/ [R=301,L]
-RewriteRule ^category/instagram/?$ /category/youtube-growth/ [R=301,L]
-RewriteRule ^category/uncategorized/?$ /category/blogging/ [R=301,L]
-RewriteRule ^category/affiliate-marketing/?$ /category/online-money/ [R=301,L]
-RewriteRule ^category/x-twitter/?$ /category/youtube-growth/ [R=301,L]
-RewriteRule ^category/passive-income/?$ /category/online-money/ [R=301,L]
-RewriteRule ^category/tech-reviews/?$ /category/tech-ai/ [R=301,L]
-RewriteRule ^category/ai-tools/?$ /category/tech-ai/ [R=301,L]
-RewriteRule ^category/technology/?$ /category/tech-ai/ [R=301,L]
-RewriteRule ^category/finance-wealth/?$ /category/finance/ [R=301,L]
+RewriteRule ^category/linkedin-growth/?$ https://topblogtech.com/category/youtube-growth/ [R=301,L]
+RewriteRule ^category/self-growth/?$ https://topblogtech.com/category/blogging/ [R=301,L]
+RewriteRule ^category/instagram/?$ https://topblogtech.com/category/youtube-growth/ [R=301,L]
+RewriteRule ^category/uncategorized/?$ https://topblogtech.com/category/blogging/ [R=301,L]
+RewriteRule ^category/affiliate-marketing/?$ https://topblogtech.com/category/online-money/ [R=301,L]
+RewriteRule ^category/x-twitter/?$ https://topblogtech.com/category/youtube-growth/ [R=301,L]
+RewriteRule ^category/passive-income/?$ https://topblogtech.com/category/online-money/ [R=301,L]
+RewriteRule ^category/tech-reviews/?$ https://topblogtech.com/category/tech-ai/ [R=301,L]
+RewriteRule ^category/ai-tools/?$ https://topblogtech.com/category/tech-ai/ [R=301,L]
+RewriteRule ^category/technology/?$ https://topblogtech.com/category/tech-ai/ [R=301,L]
+RewriteRule ^category/finance-wealth/?$ https://topblogtech.com/category/finance/ [R=301,L]
 
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
