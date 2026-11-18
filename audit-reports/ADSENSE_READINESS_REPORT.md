@@ -87,7 +87,12 @@ Before this audit the live site had three problems that alone make an AdSense re
 | Lighthouse / PageSpeed scores | **NOT TESTED** (tool unavailable; measured instead: article HTML 130 KB → 79 KB; render-path CSS/JS files 8 → 2; logo 323 KB → 7.4 KB) |
 | Google Rich Results Test, URL Inspection, GSC reports | **BLOCKED** (needs live deploy + your GSC access) |
 | Production behaviour (Cloudflare + cPanel) | **NOT TESTED** — run deploy §5 and §8 checks |
-| Git secret check on staged changes | see commit notes in final summary |
+| Git pre-commit checks: no dumps/archives/config staged; no credential patterns; no private identifiers | **PASS** |
+
+## 6b. Git
+
+- Commit **`93143ad`** — "fix: complete WordPress SEO, AdSense readiness and security improvements" — pushed to `origin/main` on 2026-11-18 (fast-forward from `15c2965`, no force-push).
+- The secrets removed from tracking in that commit **remain in earlier history** of this public repository → rotate them (SECURITY_AUDIT §6).
 
 ## 7. Before you click "Request review"
 
