@@ -10,6 +10,7 @@
  * Options:
  *   --backup-dir=PATH   where backups are written (default: $HOME/tbt-remediation-backups — outside webroot)
  *   --skip-site         only process posts/pages, skip site options / category cleanup
+ *   --flush-caches      only flush object cache, SiteSEO sitemap cache and SpeedyCache, then exit
  *
  * What it does:
  *   Posts & pages: Stage 1 (unescape literal \n \' \", remove 78 broken placeholder images,
@@ -25,7 +26,7 @@ if ( PHP_SAPI !== 'cli' ) {
 	exit;
 }
 
-$opts = getopt( '', array( 'apply', 'only:', 'backup-dir:', 'rollback:', 'skip-site', 'wp-root:' ) );
+$opts = getopt( '', array( 'apply', 'only:', 'backup-dir:', 'rollback:', 'skip-site', 'wp-root:', 'flush-caches' ) );
 $apply = isset( $opts['apply'] );
 
 $wp_root = isset( $opts['wp-root'] ) ? rtrim( $opts['wp-root'], '/\\' ) : dirname( __DIR__, 2 );
@@ -46,6 +47,31 @@ $backup_dir = isset( $opts['backup-dir'] ) ? rtrim( $opts['backup-dir'], '/\\' )
 
 function tbt_out( $s ) {
 	echo $s . "\n";
+}
+
+/**
+ * Flush object cache, SiteSEO's sitemap transients (cached 12 h and not invalidated
+ * by direct DB writes or term deletion) and the SpeedyCache page cache.
+ */
+function tbt_flush_caches() {
+	global $wpdb;
+	wp_cache_flush();
+	$n = $wpdb->query(
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_siteseo\\_%sitemap%' OR option_name LIKE '\\_transient\\_timeout\\_siteseo\\_%sitemap%'"
+	);
+	tbt_out( 'SiteSEO sitemap cache entries removed: ' . (int) $n );
+	if ( class_exists( '\SpeedyCache\Delete' ) && method_exists( '\SpeedyCache\Delete', 'all_cache' ) ) {
+		\SpeedyCache\Delete::all_cache();
+		tbt_out( 'SpeedyCache page cache purged.' );
+	} else {
+		tbt_out( 'NOTE: purge SpeedyCache manually (wp-admin > SpeedyCache > Delete Cache).' );
+	}
+	tbt_out( 'Also purge Cloudflare: dashboard > Caching > Configuration > Purge Everything.' );
+}
+
+if ( isset( $opts['flush-caches'] ) ) {
+	tbt_flush_caches();
+	exit( 0 );
 }
 
 tbt_out( '== TopBlogTech remediation — ' . ( $apply ? 'APPLY MODE' : 'DRY RUN (no changes written; add --apply)' ) );
@@ -315,12 +341,5 @@ foreach ( $terms_to_del as $t ) {
 	tbt_out( "  deleted category {$t->slug}: " . ( true === $r ? 'ok' : 'FAILED' ) );
 }
 
-// Flush caches so the changes are visible immediately.
-wp_cache_flush();
-if ( class_exists( '\SpeedyCache\Delete' ) && method_exists( '\SpeedyCache\Delete', 'all_cache' ) ) {
-	\SpeedyCache\Delete::all_cache();
-	tbt_out( 'SpeedyCache page cache purged.' );
-} else {
-	tbt_out( 'NOTE: purge SpeedyCache manually (wp-admin > SpeedyCache > Delete Cache) and Cloudflare (Purge Everything).' );
-}
+tbt_flush_caches();
 tbt_out( 'Done. Rollback: php ' . __FILE__ . " --rollback=$bf --apply" );

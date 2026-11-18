@@ -383,7 +383,9 @@ function tbt_contact_form_handle() {
 		$go( 'invalid' );
 	}
 
-	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+	// Behind Cloudflare REMOTE_ADDR is a shared edge IP; use the visitor IP Cloudflare passes.
+	$ip_src = ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : ( $_SERVER['REMOTE_ADDR'] ?? '' );
+	$ip     = filter_var( wp_unslash( $ip_src ), FILTER_VALIDATE_IP ) ? wp_unslash( $ip_src ) : 'unknown';
 	$key = 'tbt_cf_' . md5( $ip );
 	$n   = (int) get_transient( $key );
 	if ( $n >= 3 ) {

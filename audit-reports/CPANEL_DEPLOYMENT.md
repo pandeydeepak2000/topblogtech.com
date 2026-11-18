@@ -111,6 +111,9 @@ Note the printed backup path (needed for rollback).
 
 ## 7. Caches
 
+- `php tools/content-remediation/remediate.php --flush-caches` clears the object cache, SiteSEO's sitemap cache (otherwise deleted categories stay in `category-sitemap1.xml` for up to 12 h) and SpeedyCache.
+- **Cloudflare caches static files (e.g. `.zip`) for 30 days**: a file removed from the server keeps being served from the edge until you purge.
+
 - The script purges SpeedyCache automatically (if it says "purge manually": wp-admin → SpeedyCache → Delete Cache).
 - Cloudflare → Caching → **Purge Everything**.
 - Cloudflare → SSL/TLS → **Edge Certificates → Always Use HTTPS: On**; SSL/TLS mode **Full (strict)** if the server has a valid certificate (cPanel AutoSSL), otherwise **Full**.
