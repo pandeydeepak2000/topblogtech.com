@@ -1,0 +1,124 @@
+<!-- wp:paragraph -->
+<p>If your WordPress articles show the characters <code>&#92;n</code> between paragraphs, sometimes dozens of times on one page, your content has been stored with escaped line breaks. This happened on every article of this blog, 9,506 times in total, and it is an easy problem to miss because it often does not show up the same way in the editor. This guide explains what causes it, how to confirm it, and how to fix it without damaging code samples or other content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">What you are seeing</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>In normal WordPress content, paragraphs are separated by real line breaks, invisible characters that the block editor and the browser ignore. When content is escaped incorrectly, those line breaks are replaced by two visible characters: a backslash followed by the letter n. WordPress then prints them as text. Typical symptoms:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><code>&#92;n</code> or <code>&#92;n&#92;n</code> visible between paragraphs, headings and list items.</li>
+<li>Apostrophes shown as <code>&#92;'</code> (for example <code>YouTube&#92;'s</code>), often also in the meta description shown in search results.</li>
+<li>On some pages, double backslashes such as <code>&#92;&#92;n</code>, which means the content was escaped twice.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Why it happens</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>WordPress itself stores line breaks correctly. The problem appears when content reaches the database by another route and is escaped one time too many. Common causes:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><strong>Hand-edited SQL dumps.</strong> In a MySQL dump, a real line break inside a string is written as <code>&#92;n</code>. If a script or a person writes the text <code>&#92;&#92;n</code> into the dump, MySQL stores a literal backslash and n. This was the cause on this site: articles had been inserted by editing and importing SQL files.</li>
+<li><strong>Escaping twice in custom code.</strong> For example, adding slashes to a string and then passing it to a function that escapes it again.</li>
+<li><strong>JSON or API imports</strong> where the importer did not decode the JSON string before saving it.</li>
+<li><strong>Copying content from a code editor or chat tool</strong> that showed escaped text instead of real line breaks.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How to confirm the problem</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>First, look at a live article in a private browser window and search the page (Ctrl+F) for <code>&#92;n</code>. Then check the database to see how many posts are affected. In phpMyAdmin, run this read-only query (replace <code>wp_</code> with your table prefix, which is set in <code>wp-config.php</code>):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>SELECT ID, post_type, post_title
+FROM wp_posts
+WHERE post_status = 'publish'
+  AND post_content LIKE '%&#92;&#92;&#92;&#92;n%';</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The four backslashes are not a typo. MySQL removes one level of escaping when it reads the string, and <code>LIKE</code> removes another, so <code>&#92;&#92;&#92;&#92;n</code> in the query matches one literal backslash followed by n in the content. This is described in the <a href="https://dev.mysql.com/doc/refman/8.4/en/string-comparison-functions.html" target="_blank" rel="nofollow noopener">MySQL documentation for LIKE</a>; the exception is a server running in <code>NO_BACKSLASH_ESCAPES</code> mode, which is uncommon on shared hosting.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Before you fix anything</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list">
+<li><strong>Back up the database</strong> and keep the backup outside your public web folder (see <a href="https://topblogtech.com/find-block-exposed-wordpress-backup-files/">how to find and block exposed backup files</a>).</li>
+<li><strong>Check for legitimate backslashes.</strong> Tutorials containing code, regular expressions, Windows paths or JSON may contain backslashes that must stay. On this site I checked every <code>&lt;code&gt;</code> and <code>&lt;pre&gt;</code> block first; none contained a backslash, so a site-wide fix was safe. If yours do, exclude those posts or fix them by hand.</li>
+<li><strong>Test on a copy first.</strong> Import the backup into a local or staging database and run the fix there.</li>
+</ol>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Fixing it</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The fix itself is a careful search-and-replace, done in the right order so that double-escaped text is handled before single-escaped text:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Stored text</th><th>Replace with</th></tr></thead><tbody><tr><td><code>&#92;&#92;n</code> (double-escaped)</td><td><code>&#92;n</code>, then handle as below</td></tr><tr><td><code>&#92;n</code></td><td>a real line break</td></tr><tr><td><code>&#92;'</code></td><td><code>'</code></td></tr><tr><td><code>&#92;"</code></td><td><code>"</code></td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>On this site I did it with a small PHP command-line script that loaded WordPress, read each published post, applied the replacements in that order, saved a JSON backup of every original before writing, and had a rollback mode. Two details made it safe to run on a live site:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><strong>It was idempotent.</strong> Running it a second time changed nothing, so an accidental re-run could not damage anything. I verified this on a copy of the database before running it on the live site.</li>
+<li><strong>It had a dry-run mode</strong> that listed exactly which posts would change and how many words each had before and after, so a post whose word count dropped unexpectedly would have stood out.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>If you prefer a plugin or WP-CLI&rsquo;s search-replace command, the same rules apply: back up, test on a copy, and confirm the result in the browser. Remember that a backslash is a special character in shells, SQL and most search tools, so a command that looks right can easily match the wrong thing. Always run a dry run first.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Do not forget excerpts and SEO fields</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Post content is not the only place escaped text hides. On this site the same problem appeared in post excerpts, which the SEO plugin used as meta descriptions, so search results could show <code>YouTube&#92;&#92;&#92;'s</code>. Check the excerpt field, SEO plugin titles and descriptions, and any custom fields that your theme displays.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">After the fix</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li>Clear your caching plugin and CDN cache, otherwise visitors may keep seeing the old pages.</li>
+<li>Open several articles on desktop and mobile and search the page for <code>&#92;n</code>.</li>
+<li>Run the SQL query above again; it should return no rows.</li>
+<li>Open one fixed post in the block editor and check that it loads without &ldquo;unexpected or invalid content&rdquo; warnings.</li>
+<li>In Google Search Console, use URL Inspection on a few fixed articles and request indexing so Google sees the clean version.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How to stop it happening again</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The lasting fix is to stop writing content into the database through hand-edited SQL. Publish through the WordPress editor, the REST API or WP-CLI, which handle escaping correctly, and treat SQL dumps as backups only, never as an editing tool. That change, more than the clean-up itself, is what keeps the problem from coming back. It was one of several issues I fixed before applying for AdSense, described in <a href="https://topblogtech.com/adsense-readiness-audit-case-study/">what I fixed on this blog before applying for AdSense</a>.</p>
+<!-- /wp:paragraph -->

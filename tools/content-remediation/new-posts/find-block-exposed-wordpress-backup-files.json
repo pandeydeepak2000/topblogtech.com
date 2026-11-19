@@ -1,0 +1,10 @@
+{
+    "slug": "find-block-exposed-wordpress-backup-files",
+    "title": "How to Find and Block Exposed Backup Files on a WordPress Site (and the Cloudflare Cache Trap)",
+    "excerpt": "Check whether your WordPress backups, database dumps or wp-config.php can be downloaded, block them with .htaccess, and purge Cloudflare so cached copies disappear.",
+    "category": "blogging",
+    "image": "tbt-find-block-exposed-wordpress-backups.jpg",
+    "image_alt": "Title card: Find and block exposed backup files on WordPress",
+    "content_file": "find-block-exposed-wordpress-backup-files.html",
+    "tags": []
+}

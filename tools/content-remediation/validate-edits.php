@@ -57,12 +57,26 @@ foreach ( $ids as $id ) {
 		continue;
 	}
 	$content          = file_get_contents( $src );
-	list( $new, $rep ) = tbt_apply_edits( $content, $spec['edits'] ?? array() );
-	list( $again, $rep2 ) = tbt_apply_edits( $new, $spec['edits'] ?? array() );
+	list( $new, $repf, $bad ) = tbt_apply_spec( $content, $spec );
+	list( $again, $rep2f, $bad2 ) = tbt_apply_spec( $new, $spec );
+	$rep    = tbt_flatten_report( $repf );
+	$rep2   = tbt_flatten_report( $rep2f );
 	$counts = array_count_values( $rep );
-	$bad    = tbt_report_has_failure( $rep );
 	$bal    = tbt_block_balance( $new );
-	$idem   = ( $again === $new ) && ! tbt_report_has_failure( $rep2 );
+	$idem   = ( $again === $new ) && ! $bad2;
+	// Production scenario: revision 1 already live, revision 2 must still converge to the same result.
+	if ( ! empty( $spec['edits_r2'] ) ) {
+		list( $x1 ) = tbt_apply_edits( $content, $spec['edits'] ?? array() );
+		list( $fromx1, , $badx1 ) = tbt_apply_spec( $x1, $spec );
+		if ( $badx1 || $fromx1 !== $new ) {
+			$idem = false;
+			echo "    r2-from-live-r1: FAILED
+";
+		} else {
+			echo "    r2-from-live-r1: OK
+";
+		}
+	}
 	printf(
 		"[%s] edits=%d %s balance=%s idempotent=%s words %d->%d\n",
 		$id,
@@ -75,7 +89,7 @@ foreach ( $ids as $id ) {
 	);
 	foreach ( $rep as $i => $r ) {
 		if ( 'applied' !== $r ) {
-			echo "    edit #$i: $r :: " . substr( str_replace( "\n", '\n', $spec['edits'][ $i ]['find'] ), 0, 110 ) . "\n";
+			echo "    edit #$i: $r :: " . substr( str_replace( "\n", '\n', ( array_merge( $spec['edits'] ?? array(), $spec['edits_r2'] ?? array() )[ $i ]['find'] ?? '' ) ), 0, 110 ) . "\n";
 		}
 	}
 	if ( true !== $bal ) {

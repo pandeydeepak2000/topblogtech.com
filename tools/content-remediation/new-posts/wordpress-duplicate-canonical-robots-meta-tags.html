@@ -1,0 +1,114 @@
+<!-- wp:paragraph -->
+<p>An SEO plugin and a theme can both try to manage your page&rsquo;s SEO tags, and when they do, every page ends up with two canonical links, two robots tags and two meta descriptions. Nothing looks wrong in the browser, and the WordPress dashboard shows no warning. On this blog every single page had this problem until I checked the page source. Here is how to find duplicate SEO tags in two minutes, why they matter, and how to fix them properly.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">What duplicate SEO tags look like</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>This is a shortened version of what the head of one article on this site contained before the fix:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>&lt;meta name='robots' content='index, follow, max-image-preview:large' /&gt;
+&lt;link rel="canonical" href="https://topblogtech.com/youtube-algorithm-secrets-to-get-more-views/" /&gt;
+&lt;meta name="description" content="An architectural deep dive into YouTube..." /&gt;
+&lt;meta property="og:title" content="YouTube Algorithm Explained ... - TopBlogTech" /&gt;
+&lt;meta name="twitter:card" content="summary"/&gt;
+...
+&lt;!-- TopBlogTech SEO Engine --&gt;
+&lt;meta name="robots" content="index, follow, max-image-preview:large" /&gt;
+&lt;meta name="description" content="An architectural deep dive into YouTube..." /&gt;
+&lt;link rel="canonical" href="https://topblogtech.com/youtube-algorithm-secrets-to-get-more-views/" /&gt;
+&lt;meta property="og:title" content="YouTube Algorithm Explained ..." /&gt;
+&lt;meta name="twitter:card" content="summary_large_image" /&gt;</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The first block came from the SEO plugin (SiteSEO). The second came from custom code that had been added to the theme&rsquo;s <code>functions.php</code> as a home-made &ldquo;SEO engine&rdquo;. Notice that the two <code>twitter:card</code> values even disagree.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Why it matters</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><strong>Canonical tags:</strong> Google&rsquo;s guide to <a href="https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls" target="_blank" rel="nofollow noopener">consolidating duplicate URLs</a> recommends choosing one canonical method, notes that combining methods &ldquo;is more error prone&rdquo;, and warns against pointing to different URLs for the same page. Two identical canonical tags are usually harmless, but the day one source changes its logic (for example on paginated or filtered pages) they can disagree.</li>
+<li><strong>Robots tags:</strong> Google&rsquo;s <a href="https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag" target="_blank" rel="nofollow noopener">robots meta tag documentation</a> says that with conflicting robots rules, &ldquo;the more restrictive rule applies.&rdquo; If one source adds <code>noindex</code> to a page and the other says <code>index</code>, the page is not indexed.</li>
+<li><strong>Descriptions and social tags:</strong> with two descriptions or two sets of Open Graph tags, which one a search engine or social network uses is out of your control.</li>
+<li><strong>Maintenance:</strong> you edit a description in your SEO plugin, nothing seems to change, and you waste time looking in the wrong place.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How to check your own site</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>In a browser:</strong> open an article, press Ctrl+U to view the source, then use Ctrl+F to search for <code>rel="canonical"</code>, <code>name="robots"</code> and <code>name="description"</code>. Each should be found exactly once. Some sources use single quotes (<code>rel='canonical'</code>), so search for <code>canonical</code> on its own as well.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>From a terminal</strong>, which is faster when you want to check many URLs:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>URL=https://example.com/your-article/
+HEAD=$(curl -s "$URL" | sed -n '1,/&lt;&#92;/head&gt;/p')
+for t in "rel=.canonical" "name=.robots" "name=.description" "property=.og:title" "name=.twitter:card" "application/ld+json"; do
+  printf "%-22s %s&#92;n" "$t" "$(echo "$HEAD" | grep -o "$t" | wc -l)"
+done</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The dot in patterns like <code>rel=.canonical</code> matches either quote style. Canonical, robots, description and og:title should each print 1. More than one JSON-LD block can be fine, as long as two blocks do not describe the same thing twice, such as two Organization entries.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Check more than one page type: an article, a page, the homepage, a category archive and the search results page. On this site the duplicates were on every type, but in other setups they only appear on some templates.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Find out where each tag comes from</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><strong>HTML comments</strong> near the tags often name the source (in my case <code>&lt;!-- TopBlogTech SEO Engine --&gt;</code>).</li>
+<li><strong>Disable one candidate on a staging copy</strong> and reload the page source: whatever disappears came from that plugin or theme.</li>
+<li><strong>Search your theme files</strong> for <code>rel="canonical"</code> and <code>wp_head</code>. Custom code added to <code>functions.php</code> is a common culprit, especially on sites that were set up by following &ldquo;add SEO without a plugin&rdquo; tutorials and later installed an SEO plugin anyway.</li>
+<li><strong>Check for a second SEO plugin.</strong> Running two SEO plugins at once (for example after a migration) produces the same result.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Fix it by choosing one owner</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Pick a single system to own titles, descriptions, canonical URLs, robots tags and social tags, and remove the others. In most cases that should be your SEO plugin, because it lets you edit these values per post in the WordPress editor. On this site I kept SiteSEO for all of them and deleted the duplicate output from the theme code.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>I kept one thing in custom code: article structured data (BlogPosting and BreadcrumbList JSON-LD), because the free version of the SEO plugin did not output it. The rule is not &ldquo;never use custom code&rdquo;, it is &ldquo;never let two systems output the same tag&rdquo;. If you keep any custom SEO code, put it in a small site-specific plugin rather than the theme, so a theme update cannot silently remove it or a theme switch cannot duplicate it. Google&rsquo;s <a href="https://developers.google.com/search/docs/appearance/structured-data/article" target="_blank" rel="nofollow noopener">Article structured data guide</a> lists the properties worth including.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">After the fix: verify, do not assume</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list">
+<li>Clear your page cache and CDN cache.</li>
+<li>Run the terminal check (or view source) on every page type again. On this site, after the change, all 35 checked URLs showed exactly one robots tag, one canonical and one description.</li>
+<li>Confirm that pages which should not be indexed, such as internal search results, still show <code>noindex</code>. Removing one source must not remove a rule you relied on.</li>
+<li>Test an article in Google&rsquo;s Rich Results Test and check that the structured data is detected once, without errors.</li>
+<li>Use URL Inspection in Google Search Console to see the canonical Google selected for a few key pages.</li>
+</ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>This was one of several problems hidden in this site&rsquo;s page source; the full list is in <a href="https://topblogtech.com/adsense-readiness-audit-case-study/">what I fixed on this blog before applying for AdSense</a>. If you want the broader picture of on-page technical checks, see the <a href="https://topblogtech.com/technical-seo-checklist-pass-core-web-vitals/">technical SEO checklist</a>.</p>
+<!-- /wp:paragraph -->

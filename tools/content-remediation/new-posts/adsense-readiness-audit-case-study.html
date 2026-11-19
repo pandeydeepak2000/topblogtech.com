@@ -1,0 +1,133 @@
+<!-- wp:paragraph -->
+<p>Before applying for Google AdSense, I audited this blog the way a reviewer would see it: page by page, link by link, and claim by claim. I expected a few small fixes. Instead, the audit found problems that would almost certainly have led to a rejection, including some that were invisible to me in the WordPress editor. This article lists what was actually wrong on TopBlogTech, how each issue was found, and what fixed it. Every number below was measured on this site in November 2026.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><em>Transparency note: I ran this audit with the help of an AI coding assistant, which executed the checks (crawling, link testing, rendering pages on a local copy) and drafted fixes that I reviewed. AdSense approval is Google&rsquo;s decision; this is a record of what I fixed, not a promise of approval.</em></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">The starting point</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>TopBlogTech had 26 published articles and 7 pages (About, Contact, Privacy Policy, Terms, Affiliate Disclosure, Editorial Policy and Corrections Policy). On the homepage everything looked fine. The problems were inside the articles, in the page source, and on the server.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">1. Every article displayed literal &ldquo;&#92;n&rdquo; text</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The worst problem was one I had stopped noticing: the characters <code>&#92;n</code> appeared as visible text between paragraphs. One article showed it 306 times. Across all 33 posts and pages the database contained 9,506 of these sequences. The cause was content that had been written into MySQL with its line breaks escaped twice, so WordPress stored a backslash and the letter n instead of a real line break.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>To a reader, or a reviewer, that looks like a broken site. I wrote up the detection and fix separately in <a href="https://topblogtech.com/wordpress-posts-showing-backslash-n-fix/">why WordPress posts show &ldquo;&#92;n&rdquo; text and how to fix it safely</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">2. 78 broken images</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Each article contained three image blocks pointing to files named <code>placeholder-&hellip;.webp</code>. None of those files existed, so all 78 images returned HTTP 404. In the editor they were easy to overlook. I removed them rather than replacing them with stock pictures; an image should only be there if it explains something.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">3. Statistics and &ldquo;tests&rdquo; that could not be backed up</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>This was the most uncomfortable part. Several articles contained numbers that no source supported, such as a claim that AdSense rejects &ldquo;80&ndash;90%&rdquo; of applications. Google does not publish a rejection rate, and its <a href="https://support.google.com/adsense/answer/9724" target="_blank" rel="nofollow noopener">eligibility requirements</a> set no minimum number of posts or words. Other articles implied hands-on speed tests and product benchmarks that had never been run, and an author box described an &ldquo;editorial team&rdquo; for what is a one-person blog.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Every article was fact-checked against official sources. Claims that could not be verified were removed or rewritten, outdated prices were replaced with links to the vendors&rsquo; pricing pages, and comparison articles now say plainly that they are based on documentation, not on my own tests. In total that meant 928 individual corrections. Google&rsquo;s guidance on <a href="https://developers.google.com/search/docs/fundamentals/creating-helpful-content" target="_blank" rel="nofollow noopener">creating helpful, reliable content</a> was the yardstick.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">4. Legal pages that described a different website</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The Privacy Policy mentioned a consent platform that was not installed. The Affiliate Disclosure described affiliate programs I had not joined and a mailing address that was not mine. The Contact page embedded a form plugin shortcode for a form that did not exist, followed by a note saying the form might not work. All of these pages were rewritten to describe what the site actually does: Google Analytics 4 with Consent Mode, Cloudflare, a simple contact form that emails me, and no affiliate links.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">5. Technical SEO problems hidden in the page source</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><strong>Duplicate head tags:</strong> every page had two robots tags, two canonical tags and two meta descriptions, because the SEO plugin and the theme both printed them. Details: <a href="https://topblogtech.com/wordpress-duplicate-canonical-robots-meta-tags/">how to find and fix duplicate canonical and robots tags</a>.</li>
+<li><strong>No HTTPS redirect:</strong> <code>http://topblogtech.com/</code> returned a normal page instead of redirecting to HTTPS.</li>
+<li><strong>Redirecting URLs in the sitemap:</strong> 11 old category URLs were still listed even though they redirected elsewhere.</li>
+<li><strong>Missing H1:</strong> 6 of the 7 pages had no H1 heading at all, because the page template did not print the title.</li>
+<li><strong>Broken internal links:</strong> 7 links pointed to article addresses that never existed.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">6. Mobile layout and page weight</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>On a 390-pixel-wide phone screen, every page could be scrolled sideways: the page was 559&ndash;570 pixels wide because the footer link row and wide comparison tables did not wrap. The header logo was a 323 KB PNG displayed at 66 pixels high. After the fixes:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Measurement (one article)</th><th>Before</th><th>After</th></tr></thead><tbody><tr><td>HTML size</td><td>130 KB</td><td>79 KB</td></tr><tr><td>CSS/JS files loaded in the page</td><td>8</td><td>2</td></tr><tr><td>Header logo</td><td>323 KB PNG</td><td>7.4 KB WebP</td></tr><tr><td>Broken images</td><td>3</td><td>0</td></tr><tr><td>Page width on a 390 px phone</td><td>559 px (scrolls sideways)</td><td>390 px</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Some of the savings came from things the site did not need on every page: a form plugin loading its CSS, JavaScript and jQuery everywhere, emoji scripts, and the same 35 KB stylesheet loaded twice.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">7. Security: backup files the public could download</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The audit also found that database backup files had been left in the website&rsquo;s root folder, and one of them could be downloaded by anyone who knew its name. They were moved out of the public folder, the server was configured to refuse backup, archive and log files, and the passwords were changed. There was a twist: even after the file was gone from the server, Cloudflare kept serving a cached copy until I purged the cache. That story, and the checks you can run on your own site, are in <a href="https://topblogtech.com/find-block-exposed-wordpress-backup-files/">how to find and block exposed backup files on WordPress</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">8. Email that could not be delivered</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The contact address shown on every page had no MX record, so mail sent to it could not be delivered. After adding MX, SPF, DKIM and DMARC records, a test message from the site&rsquo;s mailbox scored 10/10 on mail-tester. A contact address that works matters: it is how readers, partners and reviewers reach you.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How I checked each fix</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li>Content fixes were applied by a script that first ran on a copy of the database, then was re-run to confirm it changed nothing the second time, then rolled back and re-applied to prove the backup worked.</li>
+<li>Every page was rendered at phone, tablet and desktop widths and checked for sideways scrolling, broken images, visible <code>&#92;n</code> text and exactly one visible H1.</li>
+<li>Every link inside the articles was requested and, where a government site blocked automated checks, verified manually.</li>
+<li>The live site was re-checked after deployment, including the redirect from HTTP to HTTPS and the sitemap in Google Search Console.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">What I would check first on any blog</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list">
+<li>Open three random articles on your phone and read them to the end. Look for odd characters, empty image boxes and sideways scrolling.</li>
+<li>View the page source and count the <code>robots</code>, <code>canonical</code> and <code>description</code> tags. Each should appear once.</li>
+<li>Pick five statistics on your site and find the original source for each. If you cannot, remove the number.</li>
+<li>Read your Privacy Policy, Contact and About pages as a stranger. Does every sentence describe something your site really does?</li>
+<li>Try to download <code>yourdomain.com/backup.zip</code> or any backup filename you have ever used. It should fail.</li>
+<li>Send an email to the address on your contact page from an outside account.</li>
+</ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>None of these steps guarantee AdSense approval; Google&rsquo;s <a href="https://support.google.com/adsense/answer/12170222" target="_blank" rel="nofollow noopener">AdSense help page</a> says the review process &ldquo;usually takes a few days, but in some cases can take 2-4 weeks&rdquo; and the decision is theirs. What the audit did guarantee is that a reviewer now sees a site that works and says only what it can support. If I find anything else worth sharing during the review, I will update this article.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,10 @@
+{
+    "slug": "wordpress-posts-showing-backslash-n-fix",
+    "title": "Why Your WordPress Posts Show Literal Backslash-n Text, and How to Fix It Safely",
+    "excerpt": "Seeing backslash-n characters between paragraphs in WordPress? Learn what causes escaped line breaks, how to find affected posts with SQL, and how to fix them safely.",
+    "category": "blogging",
+    "image": "tbt-wordpress-backslash-n-fix.jpg",
+    "image_alt": "Title card: Why your WordPress posts show backslash-n text and how to fix it",
+    "content_file": "wordpress-posts-showing-backslash-n-fix.html",
+    "tags": []
+}

@@ -1,0 +1,10 @@
+{
+    "slug": "wordpress-duplicate-canonical-robots-meta-tags",
+    "title": "Duplicate Canonical, Robots and Meta Description Tags in WordPress: How to Find and Fix Them",
+    "excerpt": "When an SEO plugin and your theme both print SEO tags, every page gets two canonicals and robots tags. Here is how to detect duplicates in minutes and fix them.",
+    "category": "blogging",
+    "image": "tbt-wordpress-duplicate-seo-tags.jpg",
+    "image_alt": "Title card: Duplicate canonical, robots and meta tags in WordPress",
+    "content_file": "wordpress-duplicate-canonical-robots-meta-tags.html",
+    "tags": []
+}

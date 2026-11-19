@@ -82,10 +82,23 @@ tbt_out( 'Site: ' . home_url() . ' | DB: ' . DB_NAME . ' | prefix: ' . $wpdb->pr
  * ----------------------------------------------------------------------- */
 if ( isset( $opts['rollback'] ) ) {
 	$b = json_decode( (string) file_get_contents( $opts['rollback'] ), true );
-	if ( ! is_array( $b ) || empty( $b['posts'] ) ) {
+	if ( ! is_array( $b ) || ( empty( $b['posts'] ) && empty( $b['created_posts'] ) && empty( $b['options'] ) ) ) {
 		fwrite( STDERR, "Invalid backup file\n" );
 		exit( 2 );
 	}
+	foreach ( ( $b['created_posts'] ?? array() ) as $c ) {
+		tbt_out( "delete created post {$c['post']}" . ( $c['attachment'] ? " and its featured image {$c['attachment']} (image file kept)" : '' ) );
+		if ( $apply ) {
+			if ( $c['attachment'] ) {
+				// Delete the attachment row/metadata but keep the image file, which is tracked in Git.
+				delete_post_thumbnail( $c['post'] );
+				$wpdb->delete( $wpdb->postmeta, array( 'post_id' => (int) $c['attachment'] ) );
+				$wpdb->delete( $wpdb->posts, array( 'ID' => (int) $c['attachment'] ) );
+			}
+			wp_delete_post( (int) $c['post'], true );
+		}
+	}
+	$b['posts'] = $b['posts'] ?? array();
 	foreach ( $b['posts'] as $p ) {
 		tbt_out( "rollback post {$p['ID']}" );
 		if ( $apply ) {
@@ -157,10 +170,11 @@ foreach ( $ids as $id ) {
 	}
 
 	$content           = tbt_stage1( $p['post_content'] );
-	list( $content, $rep ) = tbt_apply_edits( $content, $spec['edits'] ?? array() );
-	if ( tbt_report_has_failure( $rep ) ) {
+	list( $content, $rep_full, $failed ) = tbt_apply_spec( $content, $spec );
+	$rep = tbt_flatten_report( $rep_full );
+	if ( $failed ) {
 		$blocked[] = "$id (" . json_encode( array_count_values( $rep ) ) . ')';
-		tbt_out( sprintf( '  [%d] BLOCKED — editorial edits do not match current content: %s', $id, json_encode( $rep ) ) );
+		tbt_out( sprintf( '  [%d] BLOCKED — editorial edits do not match current content: %s', $id, json_encode( $rep_full ) ) );
 		continue;
 	}
 
@@ -289,7 +303,38 @@ if ( ! isset( $opts['skip-site'] ) && ! $only ) {
 	}
 }
 
-tbt_out( sprintf( '== Summary: %d posts/pages to update, %d options, %d empty categories, %d blocked', count( $changes ), count( $opt_changes ), count( $terms_to_del ), count( $blocked ) ) );
+/* --------------------------------------------------------------------------
+ * New posts (new-posts/*.json) — created once, matched by slug (idempotent)
+ * ----------------------------------------------------------------------- */
+$new_posts = array();
+if ( ! isset( $opts['skip-site'] ) && ! $only ) {
+	foreach ( glob( __DIR__ . '/new-posts/*.json' ) as $nf ) {
+		$np = json_decode( file_get_contents( $nf ), true );
+		if ( ! is_array( $np ) || empty( $np['slug'] ) || empty( $np['content_file'] ) ) {
+			$blocked[] = basename( $nf ) . ' (invalid new-post JSON)';
+			continue;
+		}
+		$cf = __DIR__ . '/new-posts/' . $np['content_file'];
+		if ( ! is_file( $cf ) ) {
+			$blocked[] = basename( $nf ) . ' (content file missing)';
+			continue;
+		}
+		$existing = get_page_by_path( $np['slug'], OBJECT, 'post' );
+		if ( $existing ) {
+			tbt_out( "  new post {$np['slug']}: already exists (ID {$existing->ID}) — skipped" );
+			continue;
+		}
+		if ( ! get_term_by( 'slug', $np['category'], 'category' ) ) {
+			$blocked[] = $np['slug'] . " (category {$np['category']} missing)";
+			continue;
+		}
+		$np['content'] = file_get_contents( $cf );
+		$new_posts[]   = $np;
+		tbt_out( sprintf( '  new post %s — "%s" (%d words, category %s)', $np['slug'], $np['title'], str_word_count( wp_strip_all_tags( $np['content'] ) ), $np['category'] ) );
+	}
+}
+
+tbt_out( sprintf( '== Summary: %d posts/pages to update, %d options, %d empty categories, %d new posts, %d blocked', count( $changes ), count( $opt_changes ), count( $terms_to_del ), count( $new_posts ), count( $blocked ) ) );
 if ( $blocked ) {
 	tbt_out( '   BLOCKED (not written): ' . implode( '; ', $blocked ) );
 }
@@ -298,7 +343,7 @@ if ( ! $apply ) {
 	tbt_out( 'Dry run complete. Nothing was written.' );
 	exit( $blocked ? 1 : 0 );
 }
-if ( ! $changes && ! $opt_changes && ! $terms_to_del ) {
+if ( ! $changes && ! $opt_changes && ! $terms_to_del && ! $new_posts ) {
 	tbt_out( 'Nothing to do.' );
 	exit( 0 );
 }
@@ -339,6 +384,63 @@ foreach ( $opt_changes as $k => $v ) {
 foreach ( $terms_to_del as $t ) {
 	$r = wp_delete_term( $t->term_id, 'category' );
 	tbt_out( "  deleted category {$t->slug}: " . ( true === $r ? 'ok' : 'FAILED' ) );
+}
+
+if ( $new_posts ) {
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	$admins = get_users( array( 'role' => 'administrator', 'orderby' => 'ID', 'order' => 'ASC', 'number' => 1, 'fields' => 'ID' ) );
+	$author = $admins ? (int) $admins[0] : 1;
+	wp_set_current_user( $author );
+	kses_remove_filters(); // keep reviewed HTML (tables, code, rel attributes) exactly as written
+	$created = array();
+	foreach ( $new_posts as $np ) {
+		$cat = get_term_by( 'slug', $np['category'], 'category' );
+		$pid = wp_insert_post(
+			array(
+				'post_type'      => 'post',
+				'post_status'    => 'publish',
+				'post_author'    => $author,
+				'post_name'      => $np['slug'],
+				'post_title'     => $np['title'],
+				'post_excerpt'   => $np['excerpt'],
+				'post_content'   => $np['content'],
+				'post_category'  => array( (int) $cat->term_id ),
+				'tags_input'     => $np['tags'] ?? array(),
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+				'meta_input'     => array( '_tbt_created_by_remediation' => basename( __FILE__ ) ),
+			),
+			true
+		);
+		if ( is_wp_error( $pid ) ) {
+			tbt_out( "  new post {$np['slug']}: FAILED — " . $pid->get_error_message() );
+			continue;
+		}
+		$att_id = 0;
+		if ( ! empty( $np['image'] ) && is_file( ABSPATH . 'wp-content/uploads/' . $np['image'] ) ) {
+			$file   = ABSPATH . 'wp-content/uploads/' . $np['image'];
+			$type   = wp_check_filetype( $file );
+			$att_id = wp_insert_attachment(
+				array(
+					'post_mime_type' => $type['type'],
+					'post_title'     => $np['title'],
+					'post_status'    => 'inherit',
+				),
+				$file,
+				$pid
+			);
+			if ( $att_id && ! is_wp_error( $att_id ) ) {
+				wp_update_attachment_metadata( $att_id, wp_generate_attachment_metadata( $att_id, $file ) );
+				update_post_meta( $att_id, '_wp_attachment_image_alt', $np['image_alt'] ?? $np['title'] );
+				set_post_thumbnail( $pid, $att_id );
+			}
+		}
+		$created[] = array( 'post' => (int) $pid, 'attachment' => (int) $att_id );
+		tbt_out( "  new post {$np['slug']}: created ID $pid" . ( $att_id ? " (featured image ID $att_id)" : ' (no featured image)' ) );
+	}
+	// Record created IDs in the backup so --rollback can delete them.
+	$backup['created_posts'] = $created;
+	file_put_contents( $bf, wp_json_encode( $backup, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) );
 }
 
 tbt_flush_caches();

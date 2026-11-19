@@ -1,0 +1,198 @@
+<!-- wp:paragraph -->
+<p>A database backup in the wrong folder is one of the easiest ways to leak a WordPress site: it can contain every post, every setting, user email addresses and password hashes. During an audit of this blog I found backup files sitting in the public web folder, and one of them could be downloaded by anyone who requested its URL. This guide shows how to check your own site in a few minutes, how to block these files on an Apache or LiteSpeed server, and the Cloudflare caching trap that kept the file downloadable after I had deleted it.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Why backups end up in the web root</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>On shared hosting, the folder that holds WordPress (often <code>public_html</code> or a folder named after the domain) is the folder the web server publishes. Anything you put there, a <code>.sql</code> export, a <code>.zip</code> of the site, an old copy of <code>wp-config.php</code>, can be requested by URL unless the server is told to refuse it. Common causes:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li>Exporting the database from phpMyAdmin or the command line straight into the site folder.</li>
+<li>Uploading a site archive to migrate it and forgetting to delete it.</li>
+<li>Using Git to deploy, with the repository root being the web root, and committing backups or configuration files.</li>
+<li>Renaming instead of deleting: <code>wp-config.php.bak</code>, <code>backup.sql.old</code>, <code>site.zip.1</code>.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>That last point is what caught me. The server already refused files ending in <code>.sql</code>, but one dump had a name like <code>database.sql.bak_20261113</code>. It did not end in <code>.sql</code>, so the rule did not match, and the file was served to anyone.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Step 1: List what is actually in your web folder</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>In cPanel&rsquo;s Terminal (or over SSH), go to your site folder and look for anything that is not part of WordPress:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>cd ~/public_html
+ls -la
+find . -maxdepth 2 -type f &#92;( -iname "*.sql*" -o -iname "*.zip" -o -iname "*.tar*" -o -iname "*.gz" -o -iname "*.bak*" -o -iname "*.old" -o -iname "*.log" -o -iname "error_log" &#92;) -not -path "./wp-content/cache/*"</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Change <code>~/public_html</code> to your site&rsquo;s folder. Anything this lists deserves a second look.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Step 2: Test from the outside, the way an attacker would</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Seeing a file on the server does not tell you whether the public can download it. Request it over HTTPS and look at the status code. <code>200</code> means it is being served; <code>403</code> or <code>404</code> means it is not.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>for f in wp-config.php backup.zip backup.sql database.sql.bak error_log readme.html .git/config; do
+  printf "%-22s %s&#92;n" "$f" "$(curl -s -o /dev/null -w '%{http_code}' https://example.com/$f)"
+done</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Replace <code>example.com</code> with your domain and add the exact names of any files Step 1 found. Test the real filenames, not just the obvious ones.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Step 3: Move backups out of the public folder (do not just delete them)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A backup is still useful; it just must not be public. Create a private folder in your home directory, outside the web root, and move the files there:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>mkdir -p ~/private-backups &amp;&amp; chmod 700 ~/private-backups
+mv -n ~/public_html/*.sql* ~/public_html/*.zip ~/private-backups/
+ls -la ~/private-backups/</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The <code>-n</code> flag stops <code>mv</code> from overwriting a file that already exists in the destination.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Step 4: Tell the server to refuse these file types</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Moving files fixes today&rsquo;s problem. A server rule stops the next forgotten backup from being served. These are the rules now running on this site, added near the top of the <code>.htaccess</code> file in the WordPress folder. They were tested on Apache 2.4; LiteSpeed servers, common on cPanel hosting, are designed to read Apache <code>.htaccess</code> rules, but test after saving either way. Apache&rsquo;s <a href="https://httpd.apache.org/docs/2.4/mod/core.html#filesmatch" target="_blank" rel="nofollow noopener">FilesMatch documentation</a> explains the syntax.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code># Block configuration files, backups, dumps, archives and logs
+&lt;FilesMatch "^(wp-config&#92;.php|&#92;.htaccess|&#92;.user&#92;.ini|php&#92;.ini|error_log|readme&#92;.html|license&#92;.txt)$"&gt;
+    Require all denied
+&lt;/FilesMatch&gt;
+&lt;FilesMatch "(&#92;.(sql|zip|tar|tgz|7z|rar|bak|backup|old|orig|swp|log|ini|sh|env)$)|(&#92;.(sql|tar)&#92;.)|(&#92;.bak[._-])"&gt;
+    Require all denied
+&lt;/FilesMatch&gt;
+
+# Never serve version-control folders, never run scripts from uploads
+&lt;IfModule mod_rewrite.c&gt;
+    RewriteEngine On
+    RewriteRule (^|/)&#92;.(git|svn)(/|$) - [R=404,L,NC]
+    RewriteRule ^wp-content/uploads/.*&#92;.(php[0-9]?|phtml|phar)$ - [F,L,NC]
+&lt;/IfModule&gt;</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Notice the second rule. It matches files that <em>end</em> in a backup extension and also names that merely <em>contain</em> <code>.sql.</code>, <code>.tar.</code> or <code>.bak</code> followed by more text. That is exactly the gap my original rule had. Test after saving: run the Step 2 loop again and make sure every sensitive file now returns 403 or 404, and that a normal page and an image still return 200.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>I deliberately did not block every <code>.gz</code> file, because some caching plugins serve pre-compressed pages with that extension. Database dumps ending in <code>.sql.gz</code> are still caught by the <code>.sql.</code> pattern.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Step 5: The Cloudflare cache trap</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>After moving the files and adding the rules, my own server returned 404 for the backup archive. But requesting the same URL through the public domain still downloaded the full file. The response headers explained why:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>HTTP/1.1 200 OK
+Content-Length: 295905
+Cache-Control: public, max-age=2592000
+cf-cache-status: HIT</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p><code>cf-cache-status: HIT</code> means Cloudflare answered from its own cache without asking my server. Cloudflare&rsquo;s <a href="https://developers.cloudflare.com/cache/concepts/default-cache-behavior/" target="_blank" rel="nofollow noopener">default cache behaviour</a> caches files by extension, and ZIP is on its default list, while HTML is not cached by default. Combined with the site&rsquo;s 30-day browser-cache header, the deleted archive would have stayed downloadable for weeks.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The fix is to <a href="https://developers.cloudflare.com/cache/how-to/purge-cache/" target="_blank" rel="nofollow noopener">purge the cache</a>: in the Cloudflare dashboard, go to Caching &rarr; Configuration and use Purge Everything (or Custom Purge for the exact URL). Then test again with the Step 2 loop. A quick way to bypass the cache while testing is to add a random query string, for example <code>backup.zip?check=1</code>; if that returns 404 but the plain URL returns 200, you are looking at a cached copy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Step 6: If you deploy with Git, keep secrets out of the repository</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>If your web root is a Git working copy, anything committed is both served by the web server and stored in the repository history. Add a <code>.gitignore</code> before your first commit:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>wp-config.php
+*.sql
+*.sql.*
+*.zip
+*.tar*
+*.bak*
+*.log
+error_log</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>If <code>wp-config.php</code> is already committed, <code>git rm --cached wp-config.php</code> stops tracking it without deleting your local copy. Be careful on the server: the next <code>git pull</code> will remove a file that is no longer tracked, so copy <code>wp-config.php</code> somewhere safe before pulling and put it back afterwards. Removing a file from tracking does not remove it from the repository&rsquo;s history; GitHub&rsquo;s guide on <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository" target="_blank" rel="nofollow noopener">removing sensitive data from a repository</a> covers that, and the safest assumption is that anything once committed has been seen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Step 7: If a backup was exposed, change the secrets</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Blocking the file does not undo a download that already happened. If a database dump or <code>wp-config.php</code> was ever public, treat its contents as known:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li>Change the database user&rsquo;s password in your hosting panel and update <code>DB_PASSWORD</code> in <code>wp-config.php</code>.</li>
+<li>Replace the eight authentication keys and salts in <code>wp-config.php</code> with a new set from the official <a href="https://api.wordpress.org/secret-key/1.1/salt/" target="_blank" rel="nofollow noopener">WordPress salt generator</a>. This logs everyone out.</li>
+<li>Change every WordPress administrator password and turn on two-factor authentication.</li>
+<li>Change any API keys or SMTP passwords stored in plugin settings.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The <a href="https://developer.wordpress.org/advanced-administration/security/hardening/" target="_blank" rel="nofollow noopener">WordPress hardening guide</a> covers further steps such as file permissions and keeping plugins updated.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Quick checklist</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list">
+<li>List non-WordPress files in the web root.</li>
+<li>Request each one over HTTPS from outside; anything returning 200 is public.</li>
+<li>Move backups to a private folder outside the web root.</li>
+<li>Add server rules that refuse backup, archive, log and config files, including names like <code>.sql.bak</code>.</li>
+<li>Purge your CDN cache and test again, with and without a query string.</li>
+<li>Keep <code>wp-config.php</code> and dumps out of Git.</li>
+<li>If anything was exposed, change the passwords and salts.</li>
+</ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>This check is now part of my routine before and after every migration. It takes five minutes, and it is much cheaper than finding out the hard way. You can read how it fitted into the full pre-AdSense review in <a href="https://topblogtech.com/adsense-readiness-audit-case-study/">what I fixed on this blog before applying for AdSense</a>.</p>
+<!-- /wp:paragraph -->

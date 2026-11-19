@@ -130,6 +130,42 @@ function tbt_apply_edits( $content, array $edits ) {
 	return array( $content, $report );
 }
 
+/**
+ * Apply an edit spec with revisions: "edits" (revision 1) then "edits_r2" (revision 2).
+ * Revision-2 edits may rewrite text inserted by revision 1. On content where revision 1
+ * is already applied (production after the first run), revision 1 no longer matches; in
+ * that case revision 2 is applied on its own. Returns [content, report, failed].
+ */
+function tbt_apply_spec( $content, array $spec ) {
+	$r1 = $spec['edits'] ?? array();
+	$r2 = $spec['edits_r2'] ?? array();
+
+	list( $a, $rep1 ) = tbt_apply_edits( $content, $r1 );
+	if ( ! tbt_report_has_failure( $rep1 ) ) {
+		list( $b, $rep2 ) = tbt_apply_edits( $a, $r2 );
+		return array( $b, array( 'r1' => $rep1, 'r2' => $rep2 ), tbt_report_has_failure( $rep2 ) );
+	}
+	if ( $r2 ) {
+		list( $b, $rep2 ) = tbt_apply_edits( $content, $r2 );
+		if ( ! tbt_report_has_failure( $rep2 ) ) {
+			return array( $b, array( 'r1' => 'superseded-by-r2', 'r2' => $rep2 ), false );
+		}
+		return array( $content, array( 'r1' => $rep1, 'r2' => $rep2 ), true );
+	}
+	return array( $content, array( 'r1' => $rep1 ), true );
+}
+
+/** Flatten a tbt_apply_spec() report into a list of statuses. */
+function tbt_flatten_report( $rep ) {
+	$out = array();
+	foreach ( $rep as $part ) {
+		if ( is_array( $part ) ) {
+			$out = array_merge( $out, array_values( $part ) );
+		}
+	}
+	return $out;
+}
+
 /** True when an edit report contains a failure that must block the write. */
 function tbt_report_has_failure( array $report ) {
 	foreach ( $report as $r ) {
